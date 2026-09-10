@@ -1,7 +1,7 @@
 // resources/js/app.js
 import './bootstrap';
-import './rooms/booking';
-import './rooms/search';
+// import './rooms/booking';
+// import './rooms/search';
 
 // Initialize Dasher System
 document.addEventListener('DOMContentLoaded', function() {

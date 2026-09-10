@@ -17,13 +17,16 @@ class BookingController extends Controller
     {
         $roomName = urldecode($roomName);
         
-        $roomExists = Room::where('name', $roomName)->exists();
+        $room = Room::where('name', $roomName)->first();
         
-        if (!$roomExists) {
-            // Fallback logic
+        if (!$room) {
+            return redirect()->route('home')->with('error', 'Ruangan tidak ditemukan.');
         }
         
-        return view('booking.create', ['roomName' => $roomName]);
+        return view('booking.create', [
+            'roomName' => $roomName,
+            'room' => $room
+        ]);
     }
 
     // STORE BOOKING - Diperbarui

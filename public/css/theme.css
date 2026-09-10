@@ -1,16 +1,27 @@
 /* Modern Academic Dashboard Theme */
 :root {
-    /* Primary Palette - Professional Blue-Gray */
-    --color-primary-50: #f8fafc;
-    --color-primary-100: #f1f5f9;
-    --color-primary-200: #e2e8f0;
-    --color-primary-300: #cbd5e1;
-    --color-primary-400: #94a3b8;
-    --color-primary-500: #64748b;
-    --color-primary-600: #475569;
-    --color-primary-700: #334155;
-    --color-primary-800: #1e293b;
-    --color-primary-900: #0f172a;
+    /* Primary Palette - Royal Blue / Purple gradient base */
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6; /* Modern Blue */
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+    
+    /* Base Colors */
+    --hitam: #0f172a;
+    --biru-tua: #1e3a8a;
+    --biru-medium: #3b82f6;
+    --oranye: #f97316;
+    --oranye-terang: #fb923c;
+    --abu-gelap: #f1f5f9;
+    --abu-medium: #cbd5e1;
+    --putih: #ffffff;
+    --abu: #64748b;
     
     /* Accent - Elegant Indigo */
     --color-accent-400: #818cf8;
@@ -64,4 +75,24 @@
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 16px -2px rgb(99 102 241 / 0.3);
+}
+
+/* Glassmorphism Utilities */
+.glass {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+.glass-dark {
+    background: rgba(15, 23, 42, 0.75) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }

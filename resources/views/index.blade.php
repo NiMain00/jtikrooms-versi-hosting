@@ -12,10 +12,29 @@
     <button class="search-button"><i class="fas fa-search"></i></button>
 </div>
 
-<div class="filter-bar">
-    <button class="filter-button active" data-filter="kelas">Ruangan Kelas</button>
-    <button class="filter-button" data-filter="lab">Laboratorium</button>
-    <button class="filter-button" data-filter="other">Ruangan Lainnya</button>
+<div class="filter-bar d-flex justify-content-between align-items-center flex-wrap mb-3">
+    <div>
+        <button class="filter-button active" data-filter="all">Semua Ruangan</button>
+        <button class="filter-button" data-filter="kelas">Ruangan Kelas</button>
+        <button class="filter-button" data-filter="lab">Laboratorium</button>
+        <button class="filter-button" data-filter="other">Ruangan Lainnya</button>
+    </div>
+    <div class="d-flex align-items-center mt-2 mt-md-0">
+        <label class="me-3" style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+            <input type="checkbox" id="filter-available-only"> Hanya Tersedia
+        </label>
+        <div class="text-muted small">
+            <i class="fas fa-sync-alt" id="refresh-icon"></i> Terakhir diperbarui: <span id="last-updated-time">Belum</span>
+        </div>
+    </div>
+</div>
+
+<!-- Color Legend -->
+<div class="mb-4 d-flex flex-wrap gap-3 align-items-center" style="font-size: 0.85rem; padding: 10px 15px; background: white; border-radius: 8px; border: 1px solid var(--abu-medium);">
+    <span class="fw-bold me-2"><i class="fas fa-info-circle text-primary"></i> Keterangan Status:</span>
+    <span class="d-flex align-items-center gap-1"><span style="width: 12px; height: 12px; background: rgba(16, 185, 129, 0.9); border-radius: 50%; display: inline-block;"></span> Tersedia</span>
+    <span class="d-flex align-items-center gap-1"><span style="width: 12px; height: 12px; background: rgba(239, 68, 68, 0.9); border-radius: 50%; display: inline-block;"></span> Sedang Digunakan</span>
+    <span class="d-flex align-items-center gap-1"><span style="width: 12px; height: 12px; background: rgba(245, 158, 11, 0.9); border-radius: 50%; display: inline-block;"></span> Maintenance</span>
 </div>
 
 <div class="room-list">

@@ -11,6 +11,10 @@
     <!-- Animations CSS -->
     <link rel="stylesheet" href="{{ asset('css/animations.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Mobile Specific Meta Tags -->
     <meta name="theme-color" content="#2c5aa0" />
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -39,7 +43,7 @@
                 @if(session('loggedin'))
                     <i class="fas fa-user-circle"></i>
                 @else
-                    <a href="{{ route('login') }}" class="mobile-login-btn">
+                    <a href="{{ route('login') }}" wire:navigate class="mobile-login-btn">
                         <i class="fas fa-sign-in-alt"></i>
                     </a>
                 @endif
@@ -65,7 +69,7 @@
         <ul class="sidebar-menu">
             <!-- Room List - Always accessible -->
             <li>
-                <a href="{{ route('home') }}" class="{{ request()->is('/') ? 'active' : '' }}">
+                <a href="{{ route('home') }}" wire:navigate class="{{ request()->is('/') ? 'active' : '' }}">
                     <i class="fas fa-th-list"></i>
                     <span>Ruangan</span>
                 </a>
@@ -74,7 +78,7 @@
             <!-- Administrator Menu -->
             <li>
                 @if(session('loggedin') && session('role') === 'admin')
-                    <a href="{{ route('dashboard.admin') }}" class="{{ request()->is('dashboard/admin') ? 'active' : '' }}">
+                    <a href="{{ route('dashboard.admin') }}" wire:navigate class="{{ request()->is('dashboard/admin') ? 'active' : '' }}">
                         <i class="fas fa-user-shield"></i>
                         <span>Administrator</span>
                     </a>
@@ -89,7 +93,7 @@
             <!-- Kelas Menu -->
             <li>
                 @if(session('loggedin') && (session('role') === 'kelas' || session('role') === 'admin'))
-                    <a href="{{ route('dashboard.kelas') }}" class="{{ request()->is('dashboard/kelas') ? 'active' : '' }}">
+                    <a href="{{ route('dashboard.kelas') }}" wire:navigate class="{{ request()->is('dashboard/kelas') ? 'active' : '' }}">
                         <i class="fas fa-chalkboard"></i>
                         <span>Kelas</span>
                     </a>
@@ -103,7 +107,7 @@
 
             <!-- Informasi - Always accessible --> 
             <li>
-                <a href="{{ route('informasi') }}" class="{{ request()->is('informasi') ? 'active' : '' }}">
+                <a href="{{ route('informasi') }}" wire:navigate class="{{ request()->is('informasi') ? 'active' : '' }}">
                     <i class="fas fa-info-circle"></i>
                     <span>Informasi</span>
                 </a>
@@ -129,7 +133,7 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="btn-login">
+                    <a href="{{ route('login') }}" wire:navigate class="btn-login">
                         <i class="fas fa-sign-in-alt me-2"></i>Login
                     </a>
                 @endif

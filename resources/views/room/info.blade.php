@@ -20,6 +20,7 @@
     }
 
     // ✅ QUERY SQL LANGSUNG untuk cek status real-time
+    $now = now()->timezone('Asia/Makassar')->format('Y-m-d H:i:s');
     $roomStatus = DB::select("
         SELECT 
             r.*,
@@ -29,14 +30,14 @@
                     FROM bookings b 
                     WHERE b.room_name = r.name 
                     AND b.status = 'active'
-                    AND b.waktu_mulai <= NOW()
-                    AND b.waktu_berakhir > NOW()
+                    AND b.waktu_mulai <= ?
+                    AND b.waktu_berakhir > ?
                 ) THEN 'occupied'
                 ELSE r.status
             END as real_time_status
         FROM rooms r
         WHERE r.name = ?
-    ", [$room->name])[0] ?? $room;
+    ", [$now, $now, $room->name])[0] ?? $room;
 
     $isOccupied = $roomStatus->real_time_status == 'occupied';
     
@@ -73,6 +74,7 @@
                  alt="Foto Ruangan" 
                  class="room-main-photo"
                  onerror="this.src='https://via.placeholder.com/1200x500/e2e8f0/64748b?text=TIDAK+ADA+GAMBAR'">
+            <div style="position: absolute; bottom: 8px; right: 12px; font-size: 0.7rem; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; z-index: 10;">*Foto Ilustrasi</div>
             
             <!-- Status Badge - PAKAI STATUS REAL-TIME -->
             @if($isOccupied)
@@ -233,8 +235,8 @@
             </span>
         </div>
     </div>
-    <a href="{{ route('dashboard.kelas') }}" class="btn-queue">
-        <i class="fas fa-plus-circle me-1"></i> Ambil Antrian
+    <a href="{{ route('dashboard.kelas') }}" class="btn-queue" style="background: var(--biru-medium); color: white;">
+        <i class="fas fa-list me-1"></i> Lihat Dashboard Antrian
     </a>
 </div>
     </div>
@@ -262,11 +264,13 @@
                 @endif
             </div>
         </div>
+        @if(isset($room->area) && $room->area)
         <div class="spec-item">
             <i class="fas fa-expand spec-icon"></i>
             <span class="spec-label">Luas</span>
-            <div class="spec-value">48 m²</div>
+            <div class="spec-value">{{ $room->area }} m²</div>
         </div>
+        @endif
     </div>
 
     <!-- DESKRIPSI & FASILITAS LENGKAP -->
@@ -277,12 +281,12 @@
                 <i class="fas fa-file-alt"></i> Deskripsi Ruangan
             </div>
             
-            <p class="desc-text" id="descText">
+            <p class="desc-text" id="descText" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
                 {{ $room->description ?? 'Ruangan ini didesain untuk kenyamanan proses belajar mengajar. Memiliki pencahayaan alami yang cukup serta sistem pendingin udara yang terawat. Mohon untuk mematikan proyektor dan AC setelah selesai menggunakan ruangan ini.' }}
             </p>
             
-            <a href="#" class="read-more-link" onclick="showFullDescription(event)">
-                Baca Selengkapnya <i class="fas fa-arrow-right"></i>
+            <a href="#" class="read-more-link" onclick="toggleDescription(event)" id="descToggle">
+                Baca Selengkapnya <i class="fas fa-arrow-down"></i>
             </a>
         </div>
         
@@ -390,11 +394,26 @@
         <form action="{{ route('comments.store') }}" method="POST" class="anon-input-group">
             @csrf
             <input type="hidden" name="room_id" value="{{ $room->id }}">
-            <span class="anon-label"><i class="fas fa-mask me-1"></i> Mode Anonim</span>
-            <textarea name="body" class="chat-textarea" rows="3" 
-                      placeholder="Tulis laporan atau pertanyaan tentang ruangan ini... (Identitas Anda aman)" 
-                      required></textarea>
-            <button type="submit" class="btn-send">
+            <div class="mb-2">
+                <label style="cursor: pointer;" class="anon-label">
+                    <input type="checkbox" name="is_anonymous" value="1"> <i class="fas fa-mask me-1"></i> Mode Anonim
+                </label>
+            </div>
+            @guest
+                <div class="alert alert-warning mb-2 py-1 px-2" style="font-size: 0.85rem;">
+                    <i class="fas fa-info-circle"></i> Anda harus login terlebih dahulu sebelum laporan dikirim.
+                </div>
+            @endguest
+            <div class="position-relative" style="width: 100%;">
+                <textarea name="body" class="chat-textarea" rows="3" 
+                          maxlength="500"
+                          placeholder="Tulis laporan atau pertanyaan tentang ruangan ini... (Identitas Anda aman)" 
+                          required oninput="document.getElementById('charCount').innerText = this.value.length" style="width: 100%; border: 1px solid #ccc; border-radius: 5px; padding: 10px;"></textarea>
+                <div class="text-muted mt-1" style="font-size: 0.8rem; text-align: right; width: 100%;">
+                    <span id="charCount">0</span>/500
+                </div>
+            </div>
+            <button type="submit" class="btn-send mt-2" style="width: 100%;">
                 <i class="fas fa-paper-plane me-2"></i> Kirim Laporan
             </button>
             <div style="clear: both;"></div>
@@ -432,13 +451,22 @@ function takeQueue() {
     }
 }
 
-function showFullDescription(event) {
+function toggleDescription(event) {
     event.preventDefault();
     const descText = document.getElementById('descText');
-    descText.style.webkitLineClamp = 'unset';
-    descText.style.overflow = 'visible';
-    descText.style.display = 'block';
-    event.target.style.display = 'none';
+    const isExpanded = descText.style.display === 'block';
+    
+    if (isExpanded) {
+        descText.style.webkitLineClamp = '3';
+        descText.style.overflow = 'hidden';
+        descText.style.display = '-webkit-box';
+        event.target.innerHTML = 'Baca Selengkapnya <i class="fas fa-arrow-down"></i>';
+    } else {
+        descText.style.webkitLineClamp = 'unset';
+        descText.style.overflow = 'visible';
+        descText.style.display = 'block';
+        event.target.innerHTML = 'Tutup <i class="fas fa-arrow-up"></i>';
+    }
 }
 
 // Auto-resize textarea

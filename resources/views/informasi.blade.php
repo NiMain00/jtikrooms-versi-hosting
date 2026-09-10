@@ -49,9 +49,20 @@
     </div>
 </div>
 
+<!-- Jump Links Navigation -->
+<div class="jump-links-container mb-4" style="background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 15px; border-radius: 12px; position: sticky; top: 15px; z-index: 100; border: 1px solid #e2e8f0; display: flex; gap: 10px; overflow-x: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+    <a href="#kontak" class="btn btn-sm btn-outline-primary rounded-pill text-nowrap"><i class="fas fa-map-marker-alt me-1"></i> Kontak</a>
+    <a href="#jam" class="btn btn-sm btn-outline-primary rounded-pill text-nowrap"><i class="fas fa-clock me-1"></i> Jam</a>
+    <a href="#prodi" class="btn btn-sm btn-outline-primary rounded-pill text-nowrap"><i class="fas fa-graduation-cap me-1"></i> Prodi</a>
+    <a href="#sejarah" class="btn btn-sm btn-outline-primary rounded-pill text-nowrap"><i class="fas fa-book-open me-1"></i> Sejarah</a>
+    <a href="#visimisi" class="btn btn-sm btn-outline-primary rounded-pill text-nowrap"><i class="fas fa-bullseye me-1"></i> Visi Misi</a>
+    <a href="#prestasi" class="btn btn-sm btn-outline-primary rounded-pill text-nowrap"><i class="fas fa-trophy me-1"></i> Prestasi</a>
+    <a href="#dosen" class="btn btn-sm btn-outline-primary rounded-pill text-nowrap"><i class="fas fa-users me-1"></i> Dosen & Staf</a>
+</div>
+
 <div class="about-content">
     <div class="info-grid-main">
-        <div class="info-card-main" data-animate style="--item-index: 0;">
+        <div id="kontak" class="info-card-main" data-animate style="--item-index: 0;">
             <div class="info-card-header-main">
                 <div class="info-icon">
                     <i class="fas fa-map-marker-alt"></i>
@@ -64,7 +75,7 @@
                         <i class="fas fa-map-pin mt-1"></i>
                         <div class="contact-details">
                             <strong>Alamat Kampus</strong>
-                            <p>{{ $about['info']['address'] ?? 'Jl. Pendidikan No. 123, Jakarta Selatan' }}</p>
+                            <p>{{ $about['info']['address'] ?? 'Jl. A.H. Nasution No. 105, Cipadung, Cibiru, Kota Bandung' }}</p>
                         </div>
                     </div>
                     <div class="contact-item-main">
@@ -91,7 +102,7 @@
             </div>
         </div>
 
-        <div class="info-card-main" data-animate style="--item-index: 1;">
+        <div id="jam" class="info-card-main" data-animate style="--item-index: 1;">
             <div class="info-card-header-main">
                 <div class="info-icon">
                     <i class="fas fa-clock"></i>
@@ -115,7 +126,7 @@
             </div>
         </div>
 
-        <div class="info-card-main" data-animate style="--item-index: 2;">
+        <div id="prodi" class="info-card-main" data-animate style="--item-index: 2;">
             <div class="info-card-header-main">
                 <div class="info-icon">
                     <i class="fas fa-graduation-cap"></i>
@@ -144,7 +155,7 @@
         </div>
     </div>
 
-    <div class="history-section">
+    <div id="sejarah" class="history-section">
         <div class="section-header-main" data-animate>
             <h3><i class="fas fa-book-open me-2"></i>Sejarah JTIK</h3>
         </div>
@@ -156,7 +167,7 @@
         </div>
     </div>
 
-    <div class="vision-mission-section">
+    <div id="visimisi" class="vision-mission-section">
         <div class="section-header-main" data-animate>
             <h3><i class="fas fa-bullseye me-2"></i>Visi & Misi JTIK</h3>
         </div>
@@ -191,7 +202,7 @@
         </div>
     </div>
 
-    <div class="achievements-section">
+    <div id="prestasi" class="achievements-section">
         <div class="section-header-main" data-animate>
             <h3><i class="fas fa-trophy me-2"></i>Prestasi & Penghargaan</h3>
         </div>
@@ -219,7 +230,7 @@
         </div>
     </div>
 
-    <div class="staff-section">
+    <div id="dosen" class="staff-section">
         <div class="section-header-main" data-animate>
             <h3><i class="fas fa-users me-2"></i>Dosen & Staf</h3>
         </div>

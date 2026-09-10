@@ -21,9 +21,10 @@ let ROOMS = [];
 let appState = {
     roomStatuses: {},
     availableRooms: [], // Ini raw data dari DB
-    currentFilter: 'kelas',
+    currentFilter: 'all',
     isOnline: true,
-    isLoading: false
+    isLoading: false,
+    availableOnly: false
 };
 
 // ===== CORE FUNCTIONS =====
@@ -153,14 +154,22 @@ function getRoomInfo(roomName) {
 function showLoading() {
     const roomList = document.querySelector('.room-list');
     if (roomList) {
-        roomList.innerHTML = `
-            <div class="text-center p-5">
-                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
-                    <span class="visually-hidden">Loading...</span>
+        // Create 6 skeleton cards for a smoother transition
+        const skeletonCard = `
+            <div class="room-card skeleton-wrapper">
+                <div class="skeleton-img"></div>
+                <div class="room-info" style="padding: 1.25rem;">
+                    <div class="skeleton-text" style="width: 70%; height: 24px; margin-bottom: 8px;"></div>
+                    <div class="skeleton-text" style="width: 40%; height: 16px; margin-bottom: 24px;"></div>
+                    <div class="room-meta-grid">
+                        <div class="skeleton-text" style="width: 100%; height: 32px; border-radius: 8px;"></div>
+                        <div class="skeleton-text" style="width: 100%; height: 32px; border-radius: 8px;"></div>
+                    </div>
+                    <div class="skeleton-text" style="width: 100%; height: 44px; margin-top: 16px; border-radius: 10px;"></div>
                 </div>
-                <p class="text-muted">Sinkronisasi Data Database...</p>
             </div>
         `;
+        roomList.innerHTML = skeletonCard.repeat(6);
     }
 }
 
@@ -182,14 +191,38 @@ async function renderRooms(filter = 'kelas') {
     await fetchRoomStatuses();
     
     // 3. Filter
-    const filteredRooms = ROOMS.filter(room => room.type === filter);
+    let filteredRooms = ROOMS;
+    if (filter !== 'all') {
+        filteredRooms = ROOMS.filter(room => room.type === filter);
+    }
+    
+    // Filter hanya tersedia
+    if (appState.availableOnly) {
+        filteredRooms = filteredRooms.filter(room => {
+            const statusData = appState.roomStatuses[room.name];
+            const status = typeof statusData === 'object' ? statusData.status : (statusData || room.status || 'available');
+            return status === 'available';
+        });
+    }
+    
+    // Update Waktu Terakhir Diperbarui
+    const lastUpdatedEl = document.getElementById('last-updated-time');
+    if (lastUpdatedEl) {
+        const now = new Date();
+        lastUpdatedEl.innerText = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        const refreshIcon = document.getElementById('refresh-icon');
+        if (refreshIcon) {
+            refreshIcon.classList.add('fa-spin');
+            setTimeout(() => refreshIcon.classList.remove('fa-spin'), 1000);
+        }
+    }
     
     if (filteredRooms.length === 0) {
         roomList.innerHTML = `
             <div class="text-center p-5">
                 <i class="fas fa-door-open fa-3x text-muted mb-3"></i>
-                <p class="text-muted">Belum ada ruangan tipe "${filter}"</p>
-                <small>Tambahkan ruangan baru di menu Administrator</small>
+                <p class="text-muted">Belum ada ruangan yang cocok dengan filter aktif.</p>
+                <small>Tambahkan ruangan baru di menu Administrator atau sesuaikan filter Anda.</small>
             </div>
         `;
         return;
@@ -301,6 +334,14 @@ function setupFilterButtons() {
             renderRooms(this.dataset.filter);
         });
     });
+
+    const checkboxAvailable = document.getElementById('filter-available-only');
+    if (checkboxAvailable) {
+        checkboxAvailable.addEventListener('change', function() {
+            appState.availableOnly = this.checked;
+            renderRooms(appState.currentFilter);
+        });
+    }
 }
 
 function setupSearch() {
@@ -476,7 +517,7 @@ async function initializeDasher() {
             
             setupFilterButtons();
             setupSearch();
-            renderRooms('kelas');
+            renderRooms('all'); // Tampilkan semua ruangan di awal
             
             // Auto-refresh
             dashboardInterval = setInterval(async () => {

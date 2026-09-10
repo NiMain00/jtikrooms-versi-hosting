@@ -12,10 +12,20 @@
         <i class="fas fa-qrcode fa-3x text-primary mb-3"></i>
         <h3>Booking Ruangan</h3>
         
-        <!-- Room Lock Info -->
-        <div class="alert alert-info">
-            <i class="fas fa-lock me-2"></i>
-            <strong>Ruangan:</strong> {{ $roomName }}
+        <!-- Room Context Info -->
+        <div class="row mb-3 text-start">
+            <div class="col-md-6 mb-2">
+                <div class="alert alert-info h-100 mb-0 d-flex flex-column justify-content-center">
+                    <div class="fw-bold"><i class="fas fa-door-open me-2"></i>Ruangan</div>
+                    <div class="fs-5">{{ $room->display_name ?? $roomName }}</div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-2">
+                <div class="alert alert-secondary h-100 mb-0 d-flex flex-column justify-content-center">
+                    <div class="fw-bold"><i class="fas fa-users me-2"></i>Kapasitas & Tipe</div>
+                    <div>{{ $room->capacity ?? 40 }} Orang | {{ ucfirst($room->type ?? 'Umum') }}</div>
+                </div>
+            </div>
         </div>
     </div>
 

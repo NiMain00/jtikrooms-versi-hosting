@@ -28,8 +28,9 @@
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
-    background: var(--abu-gelap);
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, #e0e7ff 0%, #f1f5f9 100%);
+    background-attachment: fixed;
     color: var(--hitam);
     line-height: 1.5;
 }
@@ -43,8 +44,10 @@ body {
     top: 0;
     left: 0;
     bottom: 0;
-    background: var(--putih);
-    border-right: 1px solid var(--abu-medium);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
     padding: 1.5rem;
     overflow-y: auto;
     display: flex;
@@ -198,7 +201,7 @@ body {
 .main-content {
     margin-left: 240px;
     padding: 2rem;
-    background: var(--abu-gelap);
+    background: transparent;
     min-height: 100vh;
 }
 
@@ -319,8 +322,8 @@ body {
 }
 
 .room-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.15);
     border-color: var(--biru-medium);
 }
 
