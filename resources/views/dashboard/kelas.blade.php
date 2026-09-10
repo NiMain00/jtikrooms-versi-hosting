@@ -2,9 +2,9 @@
 
 @section('title', 'Dashboard Kelas - JTIK ROOMS')
 
-@section('styles')
-<link rel="stylesheet" href="{{ asset('css/kelas.css') }}">
-@endsection
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/kelas.css') }}?v={{ time() }}">
+@endpush
 
 @section('content')
 @php
