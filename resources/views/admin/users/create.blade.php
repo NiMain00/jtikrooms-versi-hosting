@@ -1,178 +1,119 @@
-@extends('layouts.app')
+@extends('layouts.stitch')
 
 @section('title', 'Tambah Perwakilan Kelas - Dasher')
 
-@section('styles')
-<link rel="stylesheet" href="{{ asset('css/admin.css') }}" />
- 
-
 @section('content')
-<div class="content-wrapper">
-    <!-- Header -->
-    <div class="admin-header">
-        <div class="header-content">
-            <div class="header-text">
-                <h1><i class="fas fa-user-plus me-2"></i>Tambah Perwakilan Kelas Baru</h1>
-                <p class="welcome-text">Buat akun perwakilan kelas baru untuk sistem booking</p>
-            </div>
-            <div class="header-actions">
-                <a href="{{ route('users.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Kembali
-                </a>
-            </div>
-        </div>
-        <div class="header-decoration">
-            <div class="decoration-circle circle-1"></div>
-            <div class="decoration-circle circle-2"></div>
-            <div class="decoration-circle circle-3"></div>
-        </div>
+<div class="p-space-md lg:p-space-xl flex flex-col gap-space-lg max-w-3xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex items-center gap-space-sm mb-2">
+        <a href="{{ route('users.index') }}" class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </a>
+        <h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">
+            Tambah Perwakilan Kelas Baru
+        </h1>
     </div>
 
-    <!-- Form Tambah -->
-    <div class="card">
-        <div class="card-header">
-            <h3><i class="fas fa-user-plus me-2"></i>Form Tambah Perwakilan Kelas</h3>
-            <span class="badge bg-success">Baru</span>
+    <!-- Error Validation -->
+    @if ($errors->any())
+    <div class="p-4 bg-error-container/30 border border-error/20 rounded-xl mb-4">
+        <div class="flex items-start gap-3 text-error">
+            <span class="material-symbols-outlined">warning</span>
+            <div>
+                <p class="font-label-lg font-bold">Terjadi Kesalahan</p>
+                <ul class="list-disc list-inside mt-1 font-body-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
-        <div class="card-body">
-            <form action="{{ route('users.store') }}" method="POST">
-                @csrf
-                
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label class="form-label">Program Studi <span class="text-danger">*</span></label>
-                            <select name="prodi" class="form-select @error('prodi') is-invalid @enderror" required>
-                                <option value="">Pilih Program Studi</option>
-                                <option value="TEKOM" {{ old('prodi') == 'TEKOM' ? 'selected' : '' }}>Teknik Komputer</option>
-                                <option value="PTIK" {{ old('prodi') == 'PTIK' ? 'selected' : '' }}>Pendidikan Teknik Informatika</option>
-                            </select>
-                            @error('prodi')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label class="form-label">Kelas <span class="text-danger">*</span></label>
-                            <select name="kelas" class="form-select @error('kelas') is-invalid @enderror" required>
-                                <option value="">Pilih Kelas</option>
-                                <option value="A" {{ old('kelas') == 'A' ? 'selected' : '' }}>A</option>
-                                <option value="B" {{ old('kelas') == 'B' ? 'selected' : '' }}>B</option>
-                                <option value="C" {{ old('kelas') == 'C' ? 'selected' : '' }}>C</option>
-                                <option value="D" {{ old('kelas') == 'D' ? 'selected' : '' }}>D</option>
-                                <option value="E" {{ old('kelas') == 'E' ? 'selected' : '' }}>E</option>
-                                <option value="F" {{ old('kelas') == 'F' ? 'selected' : '' }}>F</option>
-                                <option value="G" {{ old('kelas') == 'G' ? 'selected' : '' }}>G</option>
-                                <option value="H" {{ old('kelas') == 'H' ? 'selected' : '' }}>H</option>
-                                <option value="I" {{ old('kelas') == 'I' ? 'selected' : '' }}>I</option>
-                            </select>
-                            @error('kelas')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label class="form-label">Angkatan <span class="text-danger">*</span></label>
-                            <input type="text" name="angkatan" class="form-control @error('angkatan') is-invalid @enderror" 
-                                   value="{{ old('angkatan') }}" required maxlength="4"
-                                   placeholder="Contoh: 2023, 2024">
-                            @error('angkatan')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
+    </div>
+    @endif
+
+    <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-sm overflow-hidden p-space-lg">
+        <h2 class="font-title-md text-title-md font-bold text-on-surface mb-6 border-b border-outline-variant/20 pb-3 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">person_add</span>
+            Informasi Kelas (JTIK UNM)
+        </h2>
+        
+        <form action="{{ route('users.store') }}" method="POST" class="flex flex-col gap-space-md">
+            @csrf
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+                <!-- Program Studi -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="prodi" class="font-label-md text-label-md font-semibold text-on-surface">Program Studi <span class="text-error">*</span></label>
+                    <div class="relative">
+                        <select name="prodi" id="prodi" required
+                                class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface appearance-none">
+                            <option value="" disabled {{ old('prodi') ? '' : 'selected' }}>Pilih Program Studi</option>
+                            <option value="PTIK" {{ old('prodi') == 'PTIK' ? 'selected' : '' }}>Pendidikan Teknik Informatika dan Komputer (PTIK)</option>
+                            <option value="TEKOM" {{ old('prodi') == 'TEKOM' ? 'selected' : '' }}>Teknik Komputer (TEKOM)</option>
+                            <option value="TRKJ" {{ old('prodi') == 'TRKJ' ? 'selected' : '' }}>Teknik Rekayasa Komputer Jaringan (TRKJ)</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">arrow_drop_down</span>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Password <span class="text-danger">*</span></label>
-                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required 
+                <!-- Kelas -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="kelas" class="font-label-md text-label-md font-semibold text-on-surface">Kelas <span class="text-error">*</span></label>
+                    <div class="relative">
+                        <select name="kelas" id="kelas" required
+                                class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface appearance-none">
+                            <option value="" disabled {{ old('kelas') ? '' : 'selected' }}>Pilih Kelas</option>
+                            <option value="A" {{ old('kelas') == 'A' ? 'selected' : '' }}>A</option>
+                            <option value="B" {{ old('kelas') == 'B' ? 'selected' : '' }}>B</option>
+                            <option value="C" {{ old('kelas') == 'C' ? 'selected' : '' }}>C</option>
+                            <option value="D" {{ old('kelas') == 'D' ? 'selected' : '' }}>D</option>
+                            <option value="E" {{ old('kelas') == 'E' ? 'selected' : '' }}>E</option>
+                            <option value="F" {{ old('kelas') == 'F' ? 'selected' : '' }}>F</option>
+                            <option value="G" {{ old('kelas') == 'G' ? 'selected' : '' }}>G</option>
+                            <option value="H" {{ old('kelas') == 'H' ? 'selected' : '' }}>H</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">arrow_drop_down</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+                <!-- Angkatan -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="angkatan" class="font-label-md text-label-md font-semibold text-on-surface">Tahun Angkatan <span class="text-error">*</span></label>
+                    <div class="relative">
+                        <select name="angkatan" id="angkatan" required
+                                class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface appearance-none">
+                            <option value="" disabled {{ old('angkatan') ? '' : 'selected' }}>Pilih Angkatan</option>
+                            @for($i = date('Y'); $i >= date('Y') - 7; $i--)
+                                <option value="{{ $i }}" {{ old('angkatan') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                            @endfor
+                        </select>
+                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">arrow_drop_down</span>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="password" class="font-label-md text-label-md font-semibold text-on-surface">Password Default <span class="text-error">*</span></label>
+                    <input type="password" name="password" id="password" required minlength="6"
+                           class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface"
                            placeholder="Minimal 6 karakter">
-                    <small class="text-muted">Password akan dienkripsi menggunakan MD5</small>
-                    @error('password')
-                        <div class="text-danger small mt-1">{{ $message }}</div>
-                    @enderror
+                    <p class="font-body-sm text-on-surface-variant mt-1 text-xs">Username akan di-generate otomatis berdasarkan kombinasi (misal: tekomA23)</p>
                 </div>
+            </div>
 
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Username akan digenerate otomatis:</strong><br>
-                    • <span id="usernamePreview" class="fw-bold">tekomc24, ptika23, dll</span>
-                </div>
-
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Perhatian:</strong> Pastikan data program studi, kelas, dan angkatan sudah benar sebelum disimpan.
-                </div>
-
-                <div class="d-flex justify-content-end gap-2">
-                    <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-times me-2"></i>Batal
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Simpan Perwakilan Kelas
-                    </button>
-                </div>
-            </form>
-        </div>
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-outline-variant/20">
+                <a href="{{ route('users.index') }}" class="px-6 py-2.5 font-label-lg font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-xl transition-all">
+                    Batal
+                </a>
+                <button type="submit" class="flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container font-label-lg font-semibold rounded-xl transition-all shadow-sm">
+                    <span class="material-symbols-outlined text-[20px]">save</span>
+                    Simpan Perwakilan
+                </button>
+            </div>
+        </form>
     </div>
 </div>
-
-<style>
-.form-control, .form-select {
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    padding: 0.75rem 1rem;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.form-label {
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.5rem;
-}
-
-.alert {
-    border-radius: 10px;
-    border: none;
-}
-</style>
-
-<script>
-// Live preview username
-document.addEventListener('DOMContentLoaded', function() {
-    const prodiSelect = document.querySelector('select[name="prodi"]');
-    const kelasSelect = document.querySelector('select[name="kelas"]');
-    const angkatanInput = document.querySelector('input[name="angkatan"]');
-    const usernamePreview = document.getElementById('usernamePreview');
-    
-    function updateUsernamePreview() {
-        const prodi = prodiSelect.value;
-        const kelas = kelasSelect.value;
-        const angkatan = angkatanInput.value;
-        
-        if (prodi && kelas && angkatan) {
-            // Format: tekoma24, ptikb23 (prodi + kelas + 2digit terakhir angkatan)
-            const formattedProdi = prodi.toLowerCase();
-            const formattedKelas = kelas.toLowerCase();
-            const tahun = angkatan.slice(-2); // Ambil 2 digit terakhir
-            
-            usernamePreview.textContent = formattedProdi + formattedKelas + tahun;
-        } else {
-            usernamePreview.textContent = 'tekomc24, ptika23, dll';
-        }
-    }
-    
-    prodiSelect.addEventListener('change', updateUsernamePreview);
-    kelasSelect.addEventListener('change', updateUsernamePreview);
-    angkatanInput.addEventListener('input', updateUsernamePreview);
-});
-</script>
 @endsection

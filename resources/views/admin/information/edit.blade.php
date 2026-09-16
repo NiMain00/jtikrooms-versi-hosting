@@ -1,455 +1,103 @@
-@extends('layouts.app')
+@extends('layouts.stitch')
 
-@section('title', 'Edit Informasi JTIK - Dasher')
-
-@section('styles')
-<link rel="stylesheet" href="{{ asset('css/admin.css') }}" />
- 
+@section('title', 'Edit Informasi Publik - Dasher')
 
 @section('content')
-<div class="content-wrapper">
-    <!-- Header -->
-    <div class="admin-header">
-        <div class="header-content">
-            <div class="header-text">
-                <h1><i class="fas fa-edit me-2"></i>Edit Informasi JTIK</h1>
-                <p class="welcome-text">Perbarui informasi dan profil Jurusan Teknik Informatika & Komputer</p>
-            </div>
-            <div class="header-actions">
-                <a href="{{ route('admin.information.index') }}" class="btn btn-outline-light">
-                    <i class="fas fa-arrow-left me-2"></i>Kembali
-                </a>
-            </div>
-        </div>
-        <div class="header-decoration">
-            <div class="decoration-circle circle-1"></div>
-            <div class="decoration-circle circle-2"></div>
-            <div class="decoration-circle circle-3"></div>
-        </div>
+<div class="p-space-md lg:p-space-xl flex flex-col gap-space-lg max-w-4xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex items-center gap-space-sm mb-2">
+        <a href="{{ route('admin.information.index') }}" class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </a>
+        <h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">
+            Edit Informasi Publik
+        </h1>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <!-- Error Validation -->
+    @if ($errors->any())
+    <div class="p-4 bg-error-container/30 border border-error/20 rounded-xl mb-4">
+        <div class="flex items-start gap-3 text-error">
+            <span class="material-symbols-outlined">warning</span>
+            <div>
+                <p class="font-label-lg font-bold">Terjadi Kesalahan</p>
+                <ul class="list-disc list-inside mt-1 font-body-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
+    </div>
     @endif
 
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+    <!-- Form Container -->
+    <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-sm overflow-hidden p-space-lg">
+        <form action="{{ route('admin.information.update') }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-space-md">
+            @csrf
+            @method('PUT')
 
-    <form action="{{ route('admin.information.update') }}" method="POST">
-        @csrf
-        @method('PUT')
-        <!-- Hero Stats Section -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h3><i class="fas fa-chart-line me-2"></i>Hero Section Stats</h3>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">Judul Hero</label>
-                    <input type="text" class="form-control" name="hero_stats[title]" 
-                           value="{{ $about->hero_stats['title'] ?? 'Jurusan Teknik Informatika dan Komputer' }}">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Subjudul Hero</label>
-                    <textarea class="form-control" name="hero_stats[subtitle]" rows="2">{{ $about->hero_stats['subtitle'] ?? 'Menciptakan generasi unggul di bidang teknologi informasi dan komputer yang siap bersaing di era digital' }}</textarea>
-                </div>
+            <!-- Teks Informasi -->
+            <div class="flex flex-col gap-1.5">
+                <label for="content" class="font-label-md text-label-md font-semibold text-on-surface">Teks Pengumuman Utama <span class="text-error">*</span></label>
+                <p class="font-body-sm text-on-surface-variant mb-1">Teks ini akan ditampilkan di halaman depan Pusat Informasi Mahasiswa.</p>
+                <textarea name="content" id="content" rows="8" required
+                          class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface resize-y">{{ old('content', $information->content ?? '') }}</textarea>
             </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">Jumlah Mahasiswa</label>
-                    <input type="text" class="form-control" name="hero_stats[students]" 
-                           value="{{ $about->hero_stats['students'] ?? '500+' }}" placeholder="Contoh: 500+">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Jumlah Dosen</label>
-                    <input type="text" class="form-control" name="hero_stats[lecturers]" 
-                           value="{{ $about->hero_stats['lecturers'] ?? '25+' }}" placeholder="Contoh: 25+">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Badge Akreditasi</label>
-                    <input type="text" class="form-control" name="hero_stats[accreditation_badge]" 
-                           value="{{ $about->hero_stats['accreditation_badge'] ?? 'A' }}" placeholder="Contoh: A">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-        <!-- Informasi Umum -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3><i class="fas fa-university me-2"></i>Informasi Umum</h3>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Alamat</label>
-                            <textarea class="form-control" name="info[address]" rows="2">{{ $about->info['address'] ?? '' }}</textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Telepon</label>
-                            <input type="text" class="form-control" name="info[phone]" 
-                                   value="{{ $about->info['phone'] ?? '' }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="info[email]" 
-                                   value="{{ $about->info['email'] ?? '' }}">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">URL Google Maps</label>
-                            <input type="url" class="form-control" name="info[maps_url]" 
-                                   value="{{ $about->info['maps_url'] ?? '' }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Akreditasi</label>
-                            <input type="text" class="form-control" name="info[accreditation]" 
-                                   value="{{ $about->info['accreditation'] ?? '' }}">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Jam Operasional -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3><i class="fas fa-clock me-2"></i>Jam Operasional</h3>
-            </div>
-            <div class="card-body">
-                <div id="operational-hours">
-                    @foreach($about->info['operational_hours'] ?? [] as $index => $schedule)
-                    <div class="row mb-2 operational-hour-row">
-                        <div class="col-md-6">
-                            <label class="form-label">Hari</label>
-                            <input type="text" class="form-control" name="info[operational_hours][{{ $index }}][day]" 
-                                   value="{{ $schedule['day'] ?? '' }}" placeholder="Contoh: Senin - Kamis">
-                        </div>
-                        <div class="col-md-5">
-                            <label class="form-label">Jam</label>
-                            <input type="text" class="form-control" name="info[operational_hours][{{ $index }}][hours]" 
-                                   value="{{ $schedule['hours'] ?? '' }}" placeholder="Contoh: 07:00 - 16:00">
-                        </div>
-                        <div class="col-md-1">
-                            <label class="form-label">&nbsp;</label>
-                            <button type="button" class="btn btn-danger btn-sm remove-hour w-100">×</button>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-                <button type="button" class="btn btn-secondary btn-sm" id="add-hour">
-                    <i class="fas fa-plus me-1"></i>Tambah Jadwal
-                </button>
-            </div>
-        </div>
-
-        <!-- Program Studi -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3><i class="fas fa-book me-2"></i>Program Studi</h3>
-            </div>
-            <div class="card-body">
-                <div id="study-programs">
-                    @foreach($about->info['study_programs'] ?? [] as $index => $program)
-                    <div class="input-group mb-2 program-row">
-                        <input type="text" class="form-control" name="info[study_programs][{{ $index }}]" 
-                               value="{{ $program }}" placeholder="Nama program studi">
-                        <button type="button" class="btn btn-danger remove-program">×</button>
-                    </div>
-                    @endforeach
-                </div>
-                <button type="button" class="btn btn-secondary btn-sm" id="add-program">
-                    <i class="fas fa-plus me-1"></i>Tambah Program Studi
-                </button>
-            </div>
-        </div>
-
-        <!-- Sejarah & Visi Misi -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3><i class="fas fa-history me-2"></i>Sejarah & Visi Misi</h3>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label">Sejarah</label>
-                    <textarea class="form-control" name="detail[history]" rows="4" placeholder="Tulis sejarah JTIK">{{ $about->detail['history'] ?? '' }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Visi</label>
-                    <textarea class="form-control" name="detail[vision]" rows="3" placeholder="Tulis visi JTIK">{{ $about->detail['vision'] ?? '' }}</textarea>
-                </div>
+            <!-- Upload File -->
+            <div class="flex flex-col gap-1.5">
+                <label for="file" class="font-label-md text-label-md font-semibold text-on-surface">Lampiran Dokumen Panduan (PDF)</label>
+                <p class="font-body-sm text-on-surface-variant mb-1">Upload file PDF yang berisi panduan teknis pemakaian ruang JTIK. (Biarkan kosong jika tidak ingin mengubah file saat ini)</p>
                 
-                <div class="mb-3">
-                    <label class="form-label">Misi</label>
-                    <div id="missions">
-                        @foreach($about->detail['missions'] ?? [] as $index => $mission)
-                        <div class="input-group mb-2 mission-row">
-                            <input type="text" class="form-control" name="detail[missions][{{ $index }}]" 
-                                   value="{{ $mission }}" placeholder="Teks misi">
-                            <button type="button" class="btn btn-danger remove-mission">×</button>
-                        </div>
-                        @endforeach
+                @if(!empty($information->file_path))
+                <div class="mb-3 flex items-center justify-between p-3 rounded-xl border border-primary/20 bg-primary/5">
+                    <div class="flex items-center gap-3 text-primary font-medium font-body-sm">
+                        <span class="material-symbols-outlined">description</span>
+                        File Saat Ini Tersedia
                     </div>
-                    <button type="button" class="btn btn-secondary btn-sm" id="add-mission">
-                        <i class="fas fa-plus me-1"></i>Tambah Misi
-                    </button>
+                    <a href="{{ asset('storage/' . $information->file_path) }}" target="_blank" class="text-xs font-bold uppercase tracking-wider text-primary hover:underline">Lihat File</a>
                 </div>
+                @endif
+                
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-outline-variant/30 border-dashed rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors group relative cursor-pointer" onclick="document.getElementById('file').click()">
+                    <div class="space-y-2 text-center">
+                        <span class="material-symbols-outlined text-4xl text-on-surface-variant/50 group-hover:text-primary transition-colors">upload_file</span>
+                        <div class="flex flex-col text-sm text-on-surface-variant">
+                            <span class="font-semibold text-primary">Klik untuk unggah PDF baru</span>
+                            <span>atau drag and drop kesini</span>
+                        </div>
+                        <p class="text-xs text-on-surface-variant/50">Hanya format PDF, maksimal 2MB</p>
+                    </div>
+                    <input id="file" name="file" type="file" class="sr-only" accept=".pdf">
+                </div>
+                <p id="file-name-display" class="font-body-sm text-body-sm text-primary font-medium mt-1 hidden"></p>
             </div>
-        </div>
 
-        <!-- Pencapaian -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3><i class="fas fa-trophy me-2"></i>Pencapaian & Penghargaan</h3>
-            </div>
-            <div class="card-body">
-                <div id="achievements">
-                    @foreach($about->detail['achievements'] ?? [] as $index => $achievement)
-                    <div class="row mb-2 achievement-row">
-                        <div class="col-md-3">
-                            <label class="form-label">Tahun</label>
-                            <input type="text" class="form-control" name="detail[achievements][{{ $index }}][year]" 
-                                   value="{{ $achievement['year'] ?? '' }}" placeholder="Tahun">
-                        </div>
-                        <div class="col-md-8">
-                            <label class="form-label">Judul Prestasi</label>
-                            <input type="text" class="form-control" name="detail[achievements][{{ $index }}][title]" 
-                                   value="{{ $achievement['title'] ?? '' }}" placeholder="Judul prestasi">
-                        </div>
-                        <div class="col-md-1">
-                            <label class="form-label">&nbsp;</label>
-                            <button type="button" class="btn btn-danger btn-sm remove-achievement w-100">×</button>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-                <button type="button" class="btn btn-secondary btn-sm" id="add-achievement">
-                    <i class="fas fa-plus me-1"></i>Tambah Pencapaian
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-outline-variant/20">
+                <a href="{{ route('admin.information.index') }}" class="px-6 py-2.5 font-label-lg font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-xl transition-all">
+                    Batal
+                </a>
+                <button type="submit" class="flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container font-label-lg font-semibold rounded-xl transition-all shadow-sm">
+                    <span class="material-symbols-outlined text-[20px]">publish</span>
+                    Publikasikan
                 </button>
             </div>
-        </div>
-
-        <!-- Dosen & Staf -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3><i class="fas fa-users me-2"></i>Dosen & Staf</h3>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6 class="text-primary mb-3">Dosen Tetap</h6>
-                        <div id="lecturers">
-                            @foreach($about->detail['lecturers'] ?? [] as $index => $lecturer)
-                            <div class="input-group mb-2 lecturer-row">
-                                <input type="text" class="form-control" name="detail[lecturers][{{ $index }}]" 
-                                       value="{{ $lecturer }}" placeholder="Nama dosen">
-                                <button type="button" class="btn btn-danger remove-lecturer">×</button>
-                            </div>
-                            @endforeach
-                        </div>
-                        <button type="button" class="btn btn-secondary btn-sm" id="add-lecturer">
-                            <i class="fas fa-plus me-1"></i>Tambah Dosen
-                        </button>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="text-primary mb-3">Staf Administrasi</h6>
-                        <div id="staff">
-                            @foreach($about->detail['staff'] ?? [] as $index => $staff)
-                            <div class="input-group mb-2 staff-row">
-                                <input type="text" class="form-control" name="detail[staff][{{ $index }}]" 
-                                       value="{{ $staff }}" placeholder="Nama staf">
-                                <button type="button" class="btn btn-danger remove-staff">×</button>
-                            </div>
-                            @endforeach
-                        </div>
-                        <button type="button" class="btn btn-secondary btn-sm" id="add-staff">
-                            <i class="fas fa-plus me-1"></i>Tambah Staf
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-end mb-5">
-            <button type="submit" class="btn btn-primary btn-lg">
-                <i class="fas fa-save me-2"></i>Simpan Perubahan
-            </button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Dynamic form fields functionality
-    let hourIndex = {{ count($about->info['operational_hours'] ?? []) }};
-    let programIndex = {{ count($about->info['study_programs'] ?? []) }};
-    let missionIndex = {{ count($about->detail['missions'] ?? []) }};
-    let achievementIndex = {{ count($about->detail['achievements'] ?? []) }};
-    let lecturerIndex = {{ count($about->detail['lecturers'] ?? []) }};
-    let staffIndex = {{ count($about->detail['staff'] ?? []) }};
-
-    // Add operational hour
-    document.getElementById('add-hour')?.addEventListener('click', function() {
-        const container = document.getElementById('operational-hours');
-        const newRow = document.createElement('div');
-        newRow.className = 'row mb-2 operational-hour-row';
-        newRow.innerHTML = `
-            <div class="col-md-6">
-                <label class="form-label">Hari</label>
-                <input type="text" class="form-control" name="info[operational_hours][${hourIndex}][day]" placeholder="Contoh: Senin - Kamis">
-            </div>
-            <div class="col-md-5">
-                <label class="form-label">Jam</label>
-                <input type="text" class="form-control" name="info[operational_hours][${hourIndex}][hours]" placeholder="Contoh: 07:00 - 16:00">
-            </div>
-            <div class="col-md-1">
-                <label class="form-label">&nbsp;</label>
-                <button type="button" class="btn btn-danger btn-sm remove-hour w-100">×</button>
-            </div>
-        `;
-        container.appendChild(newRow);
-        hourIndex++;
-    });
-
-    // Add program study
-    document.getElementById('add-program')?.addEventListener('click', function() {
-        const container = document.getElementById('study-programs');
-        const newRow = document.createElement('div');
-        newRow.className = 'input-group mb-2 program-row';
-        newRow.innerHTML = `
-            <input type="text" class="form-control" name="info[study_programs][${programIndex}]" placeholder="Nama program studi">
-            <button type="button" class="btn btn-danger remove-program">×</button>
-        `;
-        container.appendChild(newRow);
-        programIndex++;
-    });
-
-    // Add mission
-    document.getElementById('add-mission')?.addEventListener('click', function() {
-        const container = document.getElementById('missions');
-        const newRow = document.createElement('div');
-        newRow.className = 'input-group mb-2 mission-row';
-        newRow.innerHTML = `
-            <input type="text" class="form-control" name="detail[missions][${missionIndex}]" placeholder="Teks misi">
-            <button type="button" class="btn btn-danger remove-mission">×</button>
-        `;
-        container.appendChild(newRow);
-        missionIndex++;
-    });
-
-    // Add achievement
-    document.getElementById('add-achievement')?.addEventListener('click', function() {
-        const container = document.getElementById('achievements');
-        const newRow = document.createElement('div');
-        newRow.className = 'row mb-2 achievement-row';
-        newRow.innerHTML = `
-            <div class="col-md-3">
-                <label class="form-label">Tahun</label>
-                <input type="text" class="form-control" name="detail[achievements][${achievementIndex}][year]" placeholder="Tahun">
-            </div>
-            <div class="col-md-8">
-                <label class="form-label">Judul Prestasi</label>
-                <input type="text" class="form-control" name="detail[achievements][${achievementIndex}][title]" placeholder="Judul prestasi">
-            </div>
-            <div class="col-md-1">
-                <label class="form-label">&nbsp;</label>
-                <button type="button" class="btn btn-danger btn-sm remove-achievement w-100">×</button>
-            </div>
-        `;
-        container.appendChild(newRow);
-        achievementIndex++;
-    });
-
-    // Add lecturer
-    document.getElementById('add-lecturer')?.addEventListener('click', function() {
-        const container = document.getElementById('lecturers');
-        const newRow = document.createElement('div');
-        newRow.className = 'input-group mb-2 lecturer-row';
-        newRow.innerHTML = `
-            <input type="text" class="form-control" name="detail[lecturers][${lecturerIndex}]" placeholder="Nama dosen">
-            <button type="button" class="btn btn-danger remove-lecturer">×</button>
-        `;
-        container.appendChild(newRow);
-        lecturerIndex++;
-    });
-
-    // Add staff
-    document.getElementById('add-staff')?.addEventListener('click', function() {
-        const container = document.getElementById('staff');
-        const newRow = document.createElement('div');
-        newRow.className = 'input-group mb-2 staff-row';
-        newRow.innerHTML = `
-            <input type="text" class="form-control" name="detail[staff][${staffIndex}]" placeholder="Nama staf">
-            <button type="button" class="btn btn-danger remove-staff">×</button>
-        `;
-        container.appendChild(newRow);
-        staffIndex++;
-    });
-
-    // Remove buttons event delegation
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-hour')) {
-            e.target.closest('.operational-hour-row').remove();
-        }
-        if (e.target.classList.contains('remove-program')) {
-            e.target.closest('.program-row').remove();
-        }
-        if (e.target.classList.contains('remove-mission')) {
-            e.target.closest('.mission-row').remove();
-        }
-        if (e.target.classList.contains('remove-achievement')) {
-            e.target.closest('.achievement-row').remove();
-        }
-        if (e.target.classList.contains('remove-lecturer')) {
-            e.target.closest('.lecturer-row').remove();
-        }
-        if (e.target.classList.contains('remove-staff')) {
-            e.target.closest('.staff-row').remove();
+    document.getElementById('file').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name;
+        const display = document.getElementById('file-name-display');
+        if (fileName) {
+            display.textContent = 'File terpilih: ' + fileName;
+            display.classList.remove('hidden');
+        } else {
+            display.classList.add('hidden');
         }
     });
-});
 </script>
-
-<style>
-.form-label {
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.5rem;
-}
-
-.input-group {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.input-group .btn {
-    flex-shrink: 0;
-}
-
-.operational-hour-row,
-.achievement-row {
-    align-items: end;
-}
-
-.btn-secondary {
-    background: #6c757d;
-    border-color: #6c757d;
-}
-
-.btn-secondary:hover {
-    background: #5a6268;
-    border-color: #545b62;
-}
-</style>
 @endsection

@@ -12,6 +12,7 @@ use App\Http\Controllers\InformasiController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\CommentAdminController; // Admin Controller
 use App\Http\Controllers\CommentController;      // User Controller
+use App\Http\Controllers\QueueController;
 
 // ===== HALAMAN PUBLIK =====
 Route::get('/', [PageController::class, 'index'])->name('home');
@@ -77,6 +78,8 @@ Route::prefix('admin')->group(function () {
 
 // ===== FALLBACK =====
 Route::get('/qr/scanner', function () { return view('qr-scanner'); })->name('qr.scanner');
+Route::post('/qr/verify', [BookingController::class, 'verifyQR'])->name('qr.verify');
+
 Route::fallback(function () { return redirect('/')->with('error', 'Halaman tidak ditemukan.'); });
 
 

@@ -1,10 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.stitch')
 
 @section('title', 'Dashboard Kelas - JTIK ROOMS')
-
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/kelas.css') }}?v={{ time() }}">
-@endpush
 
 @section('content')
 @php
@@ -35,150 +31,249 @@
         ->count();
 @endphp
 
-<div class="dashboard-kelas">
-    
-    <div class="dashboard-header" data-animate>
-        <h2><i class="fas fa-chalkboard"></i> Dashboard Kelas</h2>
-    </div>
-
-    <!-- Hero Section / Welcome Card -->
-    <div class="hero-glass-card" data-animate style="--item-index: 0;">
-        <div class="hero-content">
-            <h3>Selamat Datang, {{ session('user') }}! 👋</h3>
-            <p>Kelola penggunaan ruangan Anda dengan mudah. Gunakan fitur pemindaian QR code untuk melakukan booking secara instan tepat di depan pintu ruangan.</p>
-        </div>
-        <div class="hero-action">
-            <a href="{{ route('qr.scanner') }}" class="btn-scan-main">
-                <i class="fas fa-qrcode"></i> Scan QR Code
-            </a>
-        </div>
-    </div>
-
-    <!-- Quick Stats Grid -->
-    <div class="stats-grid-modern">
-        <div class="stat-glass-card" data-animate style="--item-index: 1;">
-            <div class="stat-icon-wrapper bg-grad-primary">
-                <i class="fas fa-door-open"></i>
-            </div>
-            <div class="stat-details">
-                <span class="stat-value">{{ $activeBookings->count() }}</span>
-                <span class="stat-title">Booking Aktif</span>
-            </div>
-        </div>
+<div class="pointer-events-none absolute -top-40 right-10 w-[500px] h-[500px] bg-primary-fixed/25 rounded-full blur-3xl"></div>
+<div class="pointer-events-none absolute top-96 -left-20 w-[450px] h-[450px] bg-secondary-fixed/20 rounded-full blur-3xl"></div>
+<div class="w-full px-space-xl py-space-lg relative z-10">
+    <div class="flex flex-col w-full gap-space-xl">
         
-        <div class="stat-glass-card" data-animate style="--item-index: 2;">
-            <div class="stat-icon-wrapper bg-grad-info">
-                <i class="fas fa-calendar-week"></i>
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-primary via-primary-container to-secondary-container p-space-xl text-on-primary shadow-xl">
+            <div class="pointer-events-none absolute -right-16 -top-16 w-80 h-80 rounded-full bg-secondary-fixed/20 blur-2xl"></div>
+            <div class="pointer-events-none absolute -left-12 -bottom-12 w-72 h-72 rounded-full bg-primary-fixed/20 blur-2xl"></div>
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-lg">
+                <div class="max-w-2xl flex flex-col gap-space-xs">
+                    <div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-on-primary/15 backdrop-blur-md self-start text-on-primary font-label-sm text-label-sm uppercase tracking-wider">
+                        <span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+                        <span>Akses Portal Mahasiswa • Kelas {{ session('user') }}</span>
+                    </div>
+                    <h1 class="font-headline-xl text-headline-xl text-on-primary font-extrabold tracking-tight">
+                        Selamat Datang, {{ session('user') }}! 👋
+                    </h1>
+                    <p class="font-body-lg text-body-lg text-on-primary/90 leading-relaxed">
+                        Kelola peminjaman laboratorium dan ruangan kelas untuk kegiatan perkuliahan angkatan Anda dengan cepat dan transparan.
+                    </p>
+                </div>
+                <!-- Action QR Card -->
+                <div class="flex flex-col sm:flex-row lg:flex-col items-center gap-space-sm p-space-md rounded-2xl bg-on-primary/10 backdrop-blur-md shadow-inner">
+                    <div class="flex items-center justify-center w-14 h-14 rounded-xl bg-on-primary/20 text-on-primary">
+                        <span class="material-symbols-outlined text-[36px]">qr_code_scanner</span>
+                    </div>
+                    <a href="{{ route('qr.scanner') }}" class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-lowest text-on-surface font-label-lg text-label-lg font-semibold shadow-md hover:bg-surface-container-high transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-secondary text-[20px]">photo_camera</span>
+                        <span>Scan QR Code Masuk Ruangan</span>
+                    </a>
+                </div>
             </div>
-            <div class="stat-details">
-                <span class="stat-value">{{ $totalBookings }}</span>
-                <span class="stat-title">Booking Minggu Ini</span>
-            </div>
-        </div>
+        </section>
         
-        <div class="stat-glass-card" data-animate style="--item-index: 3;">
-            <div class="stat-icon-wrapper bg-grad-success">
-                <i class="fas fa-check-circle"></i>
+        <!-- Metrics Row -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+            <!-- Stat 1 -->
+            <div class="flex items-center gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest/80 backdrop-blur-md shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-primary-container text-on-primary-container">
+                    <span class="material-symbols-outlined">meeting_room</span>
+                </div>
+                <div class="flex flex-col min-w-0">
+                    <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Booking Aktif</span>
+                    <div class="flex items-baseline gap-space-xs">
+                        <span class="font-headline-md text-headline-md text-on-surface font-bold">{{ $activeBookings->count() }}</span>
+                        <span class="font-title-md text-title-md text-primary font-semibold">Ruangan</span>
+                    </div>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant truncate">Sesi sedang berjalan</span>
+                </div>
             </div>
-            <div class="stat-details">
-                <span class="stat-value">{{ $completedBookings }}</span>
-                <span class="stat-title">Selesai (Mingguan)</span>
+            <!-- Stat 2 -->
+            <div class="flex items-center gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest/80 backdrop-blur-md shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-secondary-container text-on-secondary-container">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                </div>
+                <div class="flex flex-col min-w-0">
+                    <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Booking Minggu Ini</span>
+                    <div class="flex items-baseline gap-space-xs">
+                        <span class="font-headline-md text-headline-md text-on-surface font-bold">{{ $totalBookings }}</span>
+                        <span class="font-title-md text-title-md text-secondary font-semibold">Sesi</span>
+                    </div>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant truncate">Terjadwal di sistem perkuliahan</span>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <div class="dashboard-layout">
-        <!-- Left Column: Active Bookings -->
-        <div class="glass-section" data-animate style="--item-index: 4;">
-            <h4 class="section-title"><i class="fas fa-clock text-primary"></i> Booking Aktif Anda</h4>
+            <!-- Stat 3 -->
+            <div class="flex items-center gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest/80 backdrop-blur-md shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-surface-container-high text-primary">
+                    <span class="material-symbols-outlined">task_alt</span>
+                </div>
+                <div class="flex flex-col min-w-0">
+                    <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Selesai (Mingguan)</span>
+                    <div class="flex items-baseline gap-space-xs">
+                        <span class="font-headline-md text-headline-md text-on-surface font-bold">{{ $completedBookings }}</span>
+                        <span class="font-title-md text-title-md text-on-surface font-semibold">Sesi Tuntas</span>
+                    </div>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant truncate">Log presensi & check-out diverifikasi</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Two Column Main Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
             
-            <div class="booking-items">
+            <!-- Left Column (8 cols = 2/3) -->
+            <div class="lg:col-span-8 flex flex-col gap-space-lg">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-title-lg text-title-lg text-on-surface font-bold">Booking Aktif Anda</h2>
+                </div>
+                
                 @forelse($activeBookings as $booking)
                     @php
-                        $waktuBerakhir = $booking->waktu_berakhir->timezone('Asia/Makassar');
+                        $waktuBerakhir = Carbon::parse($booking->waktu_berakhir)->timezone('Asia/Makassar');
                         $timeLeft = $waktuBerakhir->diffInMinutes($now, false);
-                        $isAlmostOver = ($timeLeft > -15 && $timeLeft < 0); // Sisa < 15 menit
+                        $isAlmostOver = ($timeLeft > -15 && $timeLeft < 0);
+                        
+                        $sisaWaktuInfo = $waktuBerakhir->diff($now);
+                        $jam = $sisaWaktuInfo->h;
+                        $menit = $sisaWaktuInfo->i;
                     @endphp
-                    
-                    <div class="booking-card-modern {{ $isAlmostOver ? 'almost-over' : '' }}">
-                        <div class="b-header">
-                            <h5 class="b-room-name">{{ $booking->room_name }}</h5>
-                            <span class="b-badge">
-                                <i class="fas fa-circle" style="font-size: 0.5rem;"></i> 
-                                {{ $isAlmostOver ? 'Segera Berakhir' : 'Berlangsung' }}
+                    <!-- Active Booking Card -->
+                    <section class="flex flex-col rounded-3xl bg-surface-container-lowest/90 backdrop-blur-md shadow-md p-space-lg border {{ $isAlmostOver ? 'border-secondary' : 'border-transparent' }}">
+                        <div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md">
+                            <div class="flex items-center gap-space-xs">
+                                <span class="flex h-3 w-3 relative">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                                </span>
+                                <span class="font-label-sm text-label-sm uppercase font-bold tracking-wider text-primary">Status Live</span>
+                            </div>
+                            <span class="px-space-sm py-0.5 rounded-full {{ $isAlmostOver ? 'bg-secondary text-on-secondary' : 'bg-primary-fixed text-on-primary-fixed' }} font-label-sm text-label-sm font-semibold flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full {{ $isAlmostOver ? 'bg-on-secondary' : 'bg-primary' }} animate-pulse"></span>
+                                {{ $isAlmostOver ? 'Segera Berakhir' : 'Sesi Berlangsung' }}
                             </span>
                         </div>
-                        
-                        <div class="b-details">
-                            <div class="b-item">
-                                <span>Mata Kuliah</span>
-                                <strong>{{ $booking->mata_kuliah }}</strong>
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md pb-space-md">
+                            <div class="flex flex-col min-w-0">
+                                <h2 class="font-headline-md text-headline-md text-on-surface font-bold">
+                                    {{ $booking->room_name }}
+                                </h2>
                             </div>
-                            <div class="b-item">
-                                <span>Dosen Pengampu</span>
-                                <strong>{{ $booking->dosen }}</strong>
-                            </div>
-                            <div class="b-item">
-                                <span>Sisa Waktu</span>
-                                <strong>{{ $waktuBerakhir->diffForHumans($now) }} ({{ $waktuBerakhir->format('H:i') }})</strong>
+                            <!-- Inline Timer Gauge SVG -->
+                            <div class="flex items-center gap-space-sm p-space-xs px-space-sm rounded-xl bg-surface-container-low">
+                                <span class="material-symbols-outlined text-secondary text-[36px]">timer</span>
+                                <div class="flex flex-col">
+                                    <span class="font-label-sm text-label-sm uppercase text-on-surface-variant">Sisa Durasi</span>
+                                    <span class="font-title-md text-title-md text-secondary font-bold">{{ $jam > 0 ? $jam.' Jam ' : '' }}{{ $menit }} Menit</span>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="b-actions">
+                        <!-- 2x2 Data Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm p-space-md rounded-2xl bg-surface-container-low/70 my-space-xs">
+                            <div class="flex items-start gap-space-sm p-space-xs">
+                                <div class="p-2 rounded-xl bg-surface-container-lowest text-primary shadow-sm">
+                                    <span class="material-symbols-outlined">menu_book</span>
+                                </div>
+                                <div class="flex flex-col min-w-0">
+                                    <span class="font-label-sm text-label-sm uppercase text-on-surface-variant">Mata Kuliah</span>
+                                    <span class="font-title-md text-title-md text-on-surface font-semibold truncate">{{ $booking->mata_kuliah }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-space-sm p-space-xs">
+                                <div class="p-2 rounded-xl bg-surface-container-lowest text-primary shadow-sm">
+                                    <span class="material-symbols-outlined">person</span>
+                                </div>
+                                <div class="flex flex-col min-w-0">
+                                    <span class="font-label-sm text-label-sm uppercase text-on-surface-variant">Dosen Pengampu</span>
+                                    <span class="font-title-md text-title-md text-on-surface font-semibold truncate">{{ $booking->dosen }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-space-sm p-space-xs sm:col-span-2">
+                                <div class="p-2 rounded-xl bg-surface-container-lowest text-primary shadow-sm">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                </div>
+                                <div class="flex flex-col min-w-0">
+                                    <span class="font-label-sm text-label-sm uppercase text-on-surface-variant">Waktu Berakhir</span>
+                                    <span class="font-title-md text-title-md text-on-surface font-semibold">{{ $waktuBerakhir->format('H:i') }} WITA</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Footer -->
+                        <div class="flex flex-wrap items-center justify-end gap-space-md pt-space-md">
                             <form action="{{ route('booking.cancel', $booking->id) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn-end" onclick="return confirm('Yakin ingin mengakhiri penggunaan ruangan {{ $booking->room_name }}?')">
-                                    <i class="fas fa-stop-circle me-1"></i> Akhiri Sesi
+                                <button type="submit" class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-error text-on-error font-label-lg text-label-lg font-semibold shadow-md hover:bg-error/90 active:scale-95 transition-all" onclick="return confirm('Yakin ingin mengakhiri penggunaan ruangan {{ $booking->room_name }}?')">
+                                    <span class="material-symbols-outlined text-[20px]">stop_circle</span>
+                                    <span>Akhiri Sesi Sekarang</span>
                                 </button>
                             </form>
                         </div>
-                    </div>
+                    </section>
                 @empty
-                    <div class="empty-state">
-                        <i class="fas fa-bed"></i>
-                        <p>Belum ada aktivitas booking saat ini.<br><small class="text-muted">Gunakan tombol Scan QR untuk memulai.</small></p>
+                    <div class="flex flex-col items-center justify-center p-space-xl rounded-3xl bg-surface-container-lowest/80 border border-dashed border-outline-variant text-center">
+                        <span class="material-symbols-outlined text-[48px] text-surface-variant mb-space-sm">meeting_room</span>
+                        <h3 class="font-title-lg text-title-lg text-on-surface font-bold">Belum Ada Aktivitas Booking</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-sm">Gunakan tombol Scan QR Code untuk memulai sesi peminjaman ruangan baru.</p>
                     </div>
                 @endforelse
-            </div>
-        </div>
 
-        <!-- Right Column: Guide -->
-        <div class="glass-section" data-animate style="--item-index: 5;">
-            <h4 class="section-title"><i class="fas fa-info-circle text-info"></i> Panduan Singkat</h4>
+            </div>
             
-            <div class="guide-list">
-                <div class="guide-step">
-                    <div class="g-num">1</div>
-                    <div class="g-text">
-                        <h6>Datang ke Ruangan</h6>
-                        <p>Pastikan Anda sudah berada di depan ruangan yang ingin digunakan.</p>
+            <!-- Right Column (4 cols = 1/3) -->
+            <div class="lg:col-span-4 flex flex-col gap-space-lg">
+                <!-- Panduan Singkat Peminjaman -->
+                <section class="flex flex-col rounded-3xl bg-surface-container-lowest/90 backdrop-blur-md shadow-md p-space-lg">
+                    <div class="flex items-center gap-space-xs mb-space-sm">
+                        <span class="material-symbols-outlined text-primary">menu_book</span>
+                        <h2 class="font-title-lg text-title-lg text-on-surface font-bold">Panduan Singkat Peminjaman</h2>
                     </div>
-                </div>
-                <div class="guide-step">
-                    <div class="g-num">2</div>
-                    <div class="g-text">
-                        <h6>Scan QR Code</h6>
-                        <p>Klik tombol Scan QR di atas dan arahkan kamera ke barcode di pintu.</p>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+                        Alur 4 langkah mudah untuk memastikan ruangan perkuliahan tercatat rapi tanpa tumpang tindih jadwal.
+                    </p>
+                    <!-- 4 Step Flow -->
+                    <ol class="flex flex-col gap-space-md relative">
+                        <!-- Step 1 -->
+                        <li class="flex items-start gap-space-sm">
+                            <div class="flex items-center justify-center w-7 h-7 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold shrink-0 shadow-sm">1</div>
+                            <div class="flex flex-col">
+                                <span class="font-label-lg text-label-lg font-bold text-on-surface">Pilih Ruangan</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Cek ketersediaan dan fasilitas di menu <strong>Ruangan</strong> sebelum memilih slot kosong.</span>
+                            </div>
+                        </li>
+                        <!-- Step 2 -->
+                        <li class="flex items-start gap-space-sm">
+                            <div class="flex items-center justify-center w-7 h-7 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold shrink-0 shadow-sm">2</div>
+                            <div class="flex flex-col">
+                                <span class="font-label-lg text-label-lg font-bold text-on-surface">Datang Ke Ruangan</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Pastikan Anda sudah berada di depan ruangan yang ingin digunakan.</span>
+                            </div>
+                        </li>
+                        <!-- Step 3 -->
+                        <li class="flex items-start gap-space-sm">
+                            <div class="flex items-center justify-center w-7 h-7 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold shrink-0 shadow-sm">3</div>
+                            <div class="flex flex-col">
+                                <span class="font-label-lg text-label-lg font-bold text-on-surface">Scan & Isi Form</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Scan QR Code di pintu lab, lalu isi mata kuliah dan estimasi waktu selesai.</span>
+                            </div>
+                        </li>
+                        <!-- Step 4 -->
+                        <li class="flex items-start gap-space-sm">
+                            <div class="flex items-center justify-center w-7 h-7 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold shrink-0 shadow-sm">4</div>
+                            <div class="flex flex-col">
+                                <span class="font-label-lg text-label-lg font-bold text-on-surface">Selesai & Checkout</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Klik <strong>"Akhiri Sesi"</strong> saat perkuliahan selesai agar status ruangan kembali tersedia.</span>
+                            </div>
+                        </li>
+                    </ol>
+                    
+                    <div class="mt-space-lg p-space-md rounded-2xl bg-surface-container-high/60 flex items-start gap-space-sm">
+                        <div class="p-2 rounded-xl bg-secondary-container text-on-secondary-container shrink-0 shadow-sm">
+                            <span class="material-symbols-outlined text-[20px]">support_agent</span>
+                        </div>
+                        <div class="flex flex-col min-w-0">
+                            <span class="font-label-md text-label-md font-bold text-on-surface">Butuh Bantuan Teknisi?</span>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Kendala proyektor, AC, atau PC lab? Hubungi Helpdesk JTIK <strong>Ext. 104</strong>.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="guide-step">
-                    <div class="g-num">3</div>
-                    <div class="g-text">
-                        <h6>Isi Form & Gunakan</h6>
-                        <p>Isi mata kuliah dan jam berakhir. Ruangan otomatis terkunci untuk Anda.</p>
-                    </div>
-                </div>
-                <div class="guide-step">
-                    <div class="g-num">4</div>
-                    <div class="g-text">
-                        <h6>Akhiri Tepat Waktu</h6>
-                        <p>Jangan lupa klik "Akhiri Sesi" jika kelas sudah selesai lebih cepat.</p>
-                    </div>
-                </div>
+                </section>
             </div>
         </div>
     </div>
-
 </div>
 
 <script>

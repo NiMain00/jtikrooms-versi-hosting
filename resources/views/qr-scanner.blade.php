@@ -1,175 +1,139 @@
-@extends('layouts.app')
+@extends('layouts.stitch')
 
-@section('title', 'Scan QR Code - JTIK ROOM\'S')
+@section('title', 'QR Code Scanner - JTIKROOMS')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="mb-0">
-                        <i class="fas fa-qrcode me-2"></i>Scan QR Code
-                    </h4>
-                </div>
-                <div class="card-body text-center">
-                    <p class="text-muted">Arahkan kamera ke QR code di pintu ruangan</p>
+<div class="p-space-md lg:p-space-xl flex flex-col items-center justify-center min-h-[calc(100vh-100px)] relative overflow-hidden">
+    <!-- Decorative background elements -->
+    <div class="absolute top-1/4 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10"></div>
+    <div class="absolute bottom-1/4 -right-20 w-64 h-64 bg-secondary/10 rounded-full blur-3xl -z-10"></div>
+
+    <div class="max-w-md w-full flex flex-col gap-space-lg">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-container text-on-primary-container mb-4 shadow-sm">
+                <span class="material-symbols-outlined text-4xl">qr_code_scanner</span>
+            </div>
+            <h1 class="font-display-sm text-3xl font-bold text-on-surface mb-2">Scan QR Ruangan</h1>
+            <p class="font-body-md text-on-surface-variant">Arahkan kamera Anda ke QR Code yang tertempel di pintu ruangan untuk melihat status dan melakukan booking.</p>
+        </div>
+
+<!-- Scanner Container -->
+        <div class="bg-surface-container-lowest p-4 rounded-3xl shadow-lg border border-outline-variant/30 relative">
+            <div class="aspect-square w-full bg-black rounded-2xl overflow-hidden relative" id="reader-container">
+                <!-- Wrapper for html5-qrcode -->
+                <div id="reader" class="w-full h-full"></div>
+                
+                <!-- Overlay Frame (Optional if we want custom UI, but we can keep it as overlay) -->
+                <div class="absolute inset-0 pointer-events-none border-[40px] border-black/40 z-10">
+                    <!-- Corner markers -->
+                    <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-lg"></div>
+                    <div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-lg"></div>
+                    <div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-lg"></div>
+                    <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-lg"></div>
                     
-                    <div id="reader" class="border rounded" style="width: 100%; height: 400px; background: #f8f9fa;"></div>
-                    
-                    <div class="mt-3">
-                        <button id="btn-start" class="btn btn-success">
-                            <i class="fas fa-play me-2"></i>Start Camera
-                        </button>
-                        <button id="btn-stop" class="btn btn-danger" style="display: none;">
-                            <i class="fas fa-stop me-2"></i>Stop Camera
-                        </button>
-                    </div>
-
-                    <!-- Bantuan Kamera (Troubleshooting) -->
-                    <div class="mt-3 text-start alert alert-info py-2 px-3" style="font-size: 0.85rem; max-width: 400px; margin: 0 auto;">
-                        <i class="fas fa-question-circle me-1"></i> <strong>Kamera tidak muncul?</strong>
-                        <ul class="mb-0 ps-3 mt-1">
-                            <li>Pastikan Anda telah memberikan izin akses kamera pada browser.</li>
-                            <li>Gunakan browser Chrome/Safari versi terbaru.</li>
-                            <li>Pastikan berada di ruangan dengan pencahayaan cukup.</li>
-                        </ul>
-                    </div>
-
-                    <div id="scan-result" class="mt-4 p-3 border rounded bg-light" style="display: none;">
-                        <h5>Hasil Scan:</h5>
-                        <p id="result-text" class="fw-bold fs-5 text-primary"></p>
-                        <div class="d-flex justify-content-center gap-2 mt-3">
-                            <button id="btn-buka" class="btn btn-primary"><i class="fas fa-external-link-alt me-2"></i>Buka</button>
-                            <button id="btn-batal" class="btn btn-secondary"><i class="fas fa-times me-2"></i>Batal & Pindai Ulang</button>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <p class="text-muted mb-2">Kamera bermasalah? Ketik kode ruangan manual (misal: AE 101):</p>
-                        <div class="input-group" style="max-width: 300px; margin: 0 auto;">
-                            <input type="text" id="manual-code" class="form-control" placeholder="Kode Ruangan">
-                            <button id="btn-manual" class="btn btn-primary">Buka</button>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <a href="{{ route('dashboard.kelas') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Kembali ke Dashboard
-                        </a>
-                    </div>
+                    <!-- Scan line animation -->
+                    <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary/80 shadow-[0_0_10px_rgba(0,88,190,0.8)] w-full animate-[scan_2s_ease-in-out_infinite]"></div>
                 </div>
             </div>
+            
+            <div id="scan-status" class="mt-4 py-3 px-4 rounded-xl bg-surface-container font-label-md text-center text-on-surface-variant flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined animate-spin">sync</span>
+                Sedang menginisialisasi kamera...
+            </div>
         </div>
+
+        <a href="{{ route('home') }}" class="flex items-center justify-center gap-2 w-full py-4 bg-surface-container-lowest hover:bg-surface-container-low text-on-surface font-label-lg font-bold rounded-2xl border border-outline-variant/30 transition-all shadow-sm">
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            Kembali ke Beranda
+        </a>
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<style>
+@keyframes scan {
+    0% { top: 0; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+/* Menyembunyikan border bawaan html5-qrcode */
+#reader { border: none !important; }
+#reader video { object-fit: cover; }
+</style>
+
+<!-- Load html5-qrcode JS Library -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <script>
-let html5QrcodeScanner = null;
+document.addEventListener('DOMContentLoaded', function() {
+    let statusEl = document.getElementById('scan-status');
+    let isProcessing = false;
 
-document.getElementById('btn-start').addEventListener('click', function() {
-    startScanner();
-});
+    // Inisialisasi Html5Qrcode
+    const html5QrCode = new Html5Qrcode("reader");
 
-document.getElementById('btn-stop').addEventListener('click', function() {
-    stopScanner();
-});
+    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+        if (isProcessing) return;
+        isProcessing = true; // cegah double scan
 
-function startScanner() {
-    if (typeof Html5QrcodeScanner === 'undefined') {
-        alert('ERROR: Library tidak terload!');
-        return;
-    }
+        statusEl.innerHTML = '<span class="material-symbols-outlined text-emerald-600">check_circle</span> <span class="text-emerald-800 font-bold">QR Ditemukan! Memverifikasi...</span>';
+        statusEl.className = 'mt-4 py-3 px-4 rounded-xl bg-emerald-100 font-label-md text-center flex items-center justify-center gap-2';
+        
+        // Hentikan kamera saat memproses
+        html5QrCode.stop().then(() => {
+            console.log("Scanner stopped.");
+        }).catch(err => console.log(err));
 
-    try {
-        html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader",
-            { 
-                fps: 10, 
-                qrbox: { width: 250, height: 250 }
+        let roomName = decodedText;
+        
+        // Ekstrak nama ruangan jika QR berisi URL lengkap
+        if (decodedText.startsWith('http://') || decodedText.startsWith('https://')) {
+            if (decodedText.includes('/room/')) {
+                roomName = decodeURIComponent(decodedText.split('/room/')[1].split('?')[0]);
+            } else if (decodedText.includes('/booking/create/')) {
+                roomName = decodeURIComponent(decodedText.split('/booking/create/')[1].split('?')[0]);
+            }
+        }
+        
+        // Verifikasi ke server
+        fetch('{{ route('qr.verify') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            false
-        );
-
-        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-        
-        document.getElementById('btn-start').style.display = 'none';
-        document.getElementById('btn-stop').style.display = 'inline-block';
-        
-    } catch (error) {
-        alert('Error: ' + error.message);
-    }
-}
-
-function stopScanner() {
-    if (html5QrcodeScanner) {
-        html5QrcodeScanner.clear().catch(error => {
-            console.log("Scanner stopped");
+            body: JSON.stringify({ room_name: roomName })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                alert('Gagal memverifikasi QR Code ruangan.');
+                isProcessing = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan jaringan saat memverifikasi QR.');
+            isProcessing = false;
         });
-        html5QrcodeScanner = null;
-    }
-    document.getElementById('btn-start').style.display = 'inline-block';
-    document.getElementById('btn-stop').style.display = 'none';
-}
-
-function onScanSuccess(decodedText, decodedResult) {
-    console.log('QR Code scanned:', decodedText);
-    
-    // STOP SCANNER
-    stopScanner();
-    
-    // Tampilkan hasil
-    document.getElementById('scan-result').style.display = 'block';
-    document.getElementById('result-text').innerText = decodedText;
-    
-    document.getElementById('btn-buka').onclick = function() {
-        processQRResult(decodedText);
     };
-    
-    document.getElementById('btn-batal').onclick = function() {
-        document.getElementById('scan-result').style.display = 'none';
-        startScanner();
-    };
-}
 
-function processQRResult(decodedText) {
-    // Set session sebelum redirect (gunakan fetch API)
-    fetch('/set-qr-session', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ from_qr: true })
+    const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
+
+    // Mulai kamera (kamera belakang)
+    html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+    .then(() => {
+        statusEl.innerHTML = '<span class="material-symbols-outlined text-primary">filter_center_focus</span> <span class="text-primary font-bold">Arahkan kamera ke QR Code</span>';
+        statusEl.className = 'mt-4 py-3 px-4 rounded-xl bg-primary/10 font-label-md text-center flex items-center justify-center gap-2';
     })
-    .then(response => response.json())
-    .then(data => {
-        window.location.href = decodedText.startsWith('http') ? decodedText : '/room/' + decodedText;
-    })
-    .catch(error => {
-        console.error('Error setting session:', error);
-        window.location.href = decodedText.startsWith('http') ? decodedText : '/room/' + decodedText;
+    .catch(err => {
+        statusEl.innerHTML = '<span class="material-symbols-outlined text-error">error</span> <span class="text-error font-bold">Kamera gagal diakses</span>';
+        statusEl.className = 'mt-4 py-3 px-4 rounded-xl bg-error-container font-label-md text-center flex items-center justify-center gap-2';
+        console.error("Gagal memulai scanner:", err);
     });
-}
-
-document.getElementById('btn-manual').addEventListener('click', function() {
-    const code = document.getElementById('manual-code').value.trim();
-    if(code) {
-        processQRResult(code);
-    }
 });
-
-function onScanFailure(error) {
-    // Ignore errors
-}
 </script>
-
-<style>
-#reader video {
-    border-radius: 10px;
-    width: 100% !important;
-}
-</style>
 @endsection

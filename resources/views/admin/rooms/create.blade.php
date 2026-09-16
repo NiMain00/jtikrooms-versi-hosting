@@ -1,267 +1,194 @@
-@extends('layouts.app')
+@extends('layouts.stitch')
 
 @section('title', 'Tambah Ruangan - Dasher')
 
-@section('styles')
-<link rel="stylesheet" href="{{ asset('css/admin.css') }}" />
- 
 @section('content')
-<div class="content-wrapper">
-    <div class="admin-header">
-        <div class="header-content">
-            <div class="header-text">
-                <h1><i class="fas fa-plus-circle me-2"></i>Tambah Ruangan Baru</h1>
-                <p class="welcome-text">Buat ruangan baru & generate QR Code otomatis</p>
-            </div>
-            <div class="header-actions">
-                <a href="{{ route('rooms.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Kembali
-                </a>
+<div class="p-space-md lg:p-space-xl flex flex-col gap-space-lg max-w-3xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex items-center gap-space-sm mb-2">
+        <a href="{{ route('rooms.index') }}" class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </a>
+        <h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">
+            Tambah Ruangan Baru
+        </h1>
+    </div>
+
+    <!-- Error Validation -->
+    @if ($errors->any())
+    <div class="p-4 bg-error-container/30 border border-error/20 rounded-xl mb-4">
+        <div class="flex items-start gap-3 text-error">
+            <span class="material-symbols-outlined">warning</span>
+            <div>
+                <p class="font-label-lg font-bold">Terjadi Kesalahan</p>
+                <ul class="list-disc list-inside mt-1 font-body-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         </div>
     </div>
+    @endif
 
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3">
-            <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-door-open me-2"></i>Form Detail Ruangan</h5>
-        </div>
-        <div class="card-body p-4">
-            <form action="{{ route('rooms.store') }}" method="POST">
-                @csrf
+    <!-- Form Container -->
+    <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-sm overflow-hidden p-space-lg">
+        <form action="{{ route('rooms.store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-space-md">
+            @csrf
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+                <!-- Nama Ruangan (Kode) -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="name" class="font-label-md text-label-md font-semibold text-on-surface">Kode / Nama Singkat <span class="text-error">*</span></label>
+                    <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                           class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                           placeholder="Misal: AE 101">
+                </div>
                 
-                <div class="row g-4">
-                    <div class="col-lg-6">
-                        <div class="mb-3">
-                            <label class="form-label">Kode Ruangan <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" 
-                                   value="{{ old('name') }}" required 
-                                   placeholder="Contoh: AE101, LAB_ANIMASI">
-                        </div>
+                <!-- Nama Tampilan Lengkap -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="display_name" class="font-label-md text-label-md font-semibold text-on-surface">Nama Tampilan <span class="text-error">*</span></label>
+                    <input type="text" name="display_name" id="display_name" value="{{ old('display_name') }}" required
+                           class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                           placeholder="Misal: Lab Komputer Jaringan">
+                </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Nama Tampilan <span class="text-danger">*</span></label>
-                            <input type="text" name="display_name" class="form-control" 
-                                   value="{{ old('display_name') }}" required 
-                                   placeholder="Contoh: Ruang Teori AE 101">
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Kapasitas <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <input type="number" name="capacity" class="form-control" 
-                                               value="{{ old('capacity') }}" min="1" required placeholder="40">
-                                        <span class="input-group-text">Orang</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Luas Ruangan <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <input type="number" name="luas" class="form-control" step="0.01"
-                                               value="{{ old('luas') }}" min="5" max="500" required placeholder="48.00">
-                                        <span class="input-group-text">m²</span>
-                                    </div>
-                                    <small class="text-muted">Min. 5m², Max. 500m²</small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Lantai</label>
-                                    <select name="lantai" class="form-select">
-                                        <option value="">Pilih Lantai</option>
-                                        <option value="1" {{ old('lantai') == '1' ? 'selected' : '' }}>Lantai 1</option>
-                                        <option value="2" {{ old('lantai') == '2' ? 'selected' : '' }}>Lantai 2</option>
-                                        <option value="3" {{ old('lantai') == '3' ? 'selected' : '' }}>Lantai 3</option>
-                                        <option value="4" {{ old('lantai') == '4' ? 'selected' : '' }}>Lantai 4</option>
-                                        <option value="5" {{ old('lantai') == '5' ? 'selected' : '' }}>Lantai 5</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Lokasi</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="fas fa-map-marker-alt text-danger"></i></span>
-                                        <input type="text" name="location" class="form-control" 
-                                               value="{{ old('location') }}" 
-                                               placeholder="Contoh: Gedung JTIK - Lantai 1">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Tipe Ruangan <span class="text-danger">*</span></label>
-                                    <select name="type" class="form-select" required>
-                                        <option value="">Pilih Tipe</option>
-                                        <option value="kelas" {{ old('type') == 'kelas' ? 'selected' : '' }}>Kelas / Teori</option>
-                                        <option value="lab" {{ old('type') == 'lab' ? 'selected' : '' }}>Laboratorium</option>
-                                        <option value="other" {{ old('type') == 'other' ? 'selected' : '' }}>Ruangan Lainnya</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Status <span class="text-danger">*</span></label>
-                            <select name="status" class="form-select" required> 
-                                <option value="available" {{ old('status') == 'available' ? 'selected' : '' }}>Tersedia</option>
-                                <option value="maintenance" {{ old('status') == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                                <option value="occupied" {{ old('status') == 'occupied' ? 'selected' : '' }}>Terpakai</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Deskripsi</label>
-                            <textarea name="description" class="form-control" rows="3" 
-                                      placeholder="Deskripsi singkat tentang ruangan...">{{ old('description') }}</textarea>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6">
-                        <div class="bg-light p-4 rounded-3 h-100">
-                            <label class="form-label d-block fw-bold mb-3"><i class="fas fa-list-check me-2"></i>Fasilitas Ruangan</label>
-                            
-                            <div class="facilities-grid">
-                                @php
-                                    $defaultFacilities = [
-                                        'AC' => 'AC / Pendingin',
-                                        'Proyektor' => 'Proyektor LCD',
-                                        'Whiteboard' => 'Papan Tulis',
-                                        'WiFi' => 'Koneksi WiFi',
-                                        'Komputer' => 'Komputer PC',
-                                        'Sound System' => 'Sound System',
-                                        'Kursi Ergonomis' => 'Kursi Ergonomis',
-                                        'Meja Rapat' => 'Meja Rapat',
-                                        'Smart TV' => 'Smart TV / Monitor',
-                                        'CCTV' => 'Kamera CCTV',
-                                        'Dispenser' => 'Dispenser Air',
-                                        'Stop Kontak' => 'Stop Kontak',
-                                        'LED Projector' => 'LED Projector',
-                                        'Sistem Audio' => 'Sistem Audio',
-                                        'Kursi Lipat' => 'Kursi Lipat',
-                                        'AC Sentral' => 'AC Sentral'
-                                    ];
-                                @endphp
-
-                                @foreach($defaultFacilities as $val => $label)
-                                    <div class="facility-option">
-                                        <input type="checkbox" 
-                                               class="btn-check" 
-                                               name="facilities[]" 
-                                               id="fac_{{ Str::slug($val) }}" 
-                                               value="{{ $val }}"
-                                               {{ (is_array(old('facilities')) && in_array($val, old('facilities'))) ? 'checked' : '' }}>
-                                        
-                                        <label class="facility-card" for="fac_{{ Str::slug($val) }}">
-                                            <div class="check-icon"><i class="fas fa-check"></i></div>
-                                            <span class="facility-name">{{ $label }}</span>
-                                        </label>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <div class="mt-4">
-                                <label class="form-label small text-muted">Fasilitas Lainnya (Ketik manual, pisahkan koma)</label>
-                                <input type="text" name="custom_facilities" class="form-control" 
-                                       placeholder="Contoh: Webcam, Green Screen, Papan Tulis Elektronik"
-                                       value="{{ old('custom_facilities') }}">
-                            </div>
-                        </div>
+                <!-- Tipe Ruangan -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="type" class="font-label-md text-label-md font-semibold text-on-surface">Tipe Ruangan <span class="text-error">*</span></label>
+                    <div class="relative">
+                        <select name="type" id="type" required
+                                class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface appearance-none">
+                            <option value="">-- Pilih Tipe --</option>
+                            <option value="kelas" {{ old('type') == 'kelas' ? 'selected' : '' }}>Ruang Kelas</option>
+                            <option value="lab" {{ old('type') == 'lab' ? 'selected' : '' }}>Laboratorium</option>
+                            <option value="other" {{ old('type') == 'other' ? 'selected' : '' }}>Lainnya</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">arrow_drop_down</span>
                     </div>
                 </div>
 
-                <hr class="my-4">
+                <!-- Kapasitas -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="capacity" class="font-label-md text-label-md font-semibold text-on-surface">Kapasitas (Orang) <span class="text-error">*</span></label>
+                    <input type="number" name="capacity" id="capacity" value="{{ old('capacity') }}" required min="1"
+                           class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                           placeholder="Misal: 40">
+                </div>
 
-                <div class="alert alert-info d-flex align-items-center mt-3" role="alert">
-                    <i class="fas fa-qrcode fa-2x me-3"></i>
-                    <div>
-                        <strong>Info QR Code</strong>
-                        <div class="small">QR Code unik akan <b>dibuat secara otomatis</b> oleh sistem setelah Anda menekan tombol Simpan.</div>
+                <!-- Luas -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="luas" class="font-label-md text-label-md font-semibold text-on-surface">Luas (m²) <span class="text-error">*</span></label>
+                    <input type="number" name="luas" id="luas" value="{{ old('luas') }}" required min="5" max="500" step="0.1"
+                           class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                           placeholder="Misal: 48.5">
+                </div>
+                
+                <!-- Status -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="status" class="font-label-md text-label-md font-semibold text-on-surface">Status Awal <span class="text-error">*</span></label>
+                    <div class="relative">
+                        <select name="status" id="status" required
+                                class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface appearance-none">
+                            <option value="available" {{ old('status') == 'available' ? 'selected' : '' }}>Tersedia (Bisa dipinjam)</option>
+                            <option value="occupied" {{ old('status') == 'occupied' ? 'selected' : '' }}>Sedang Digunakan</option>
+                            <option value="maintenance" {{ old('status') == 'maintenance' ? 'selected' : '' }}>Dalam Perawatan</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">arrow_drop_down</span>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end gap-2">
-                    <a href="{{ route('rooms.index') }}" class="btn btn-light border">Batal</a>
-                    <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-2"></i>Simpan Ruangan</button>
+                <!-- Lantai -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="lantai" class="font-label-md text-label-md font-semibold text-on-surface">Lantai</label>
+                    <input type="text" name="lantai" id="lantai" value="{{ old('lantai') }}"
+                           class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                           placeholder="Misal: 1">
                 </div>
-            </form>
-        </div>
+                
+                <!-- Lokasi -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="location" class="font-label-md text-label-md font-semibold text-on-surface">Gedung / Lokasi</label>
+                    <input type="text" name="location" id="location" value="{{ old('location') }}"
+                           class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                           placeholder="Misal: Gedung JTIK">
+                </div>
+            </div>
+
+            <!-- Fasilitas (Checkboxes) -->
+            <div class="flex flex-col gap-1.5 mt-2">
+                <label class="font-label-md text-label-md font-semibold text-on-surface">Fasilitas Standar</label>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    @php $facilitiesInput = old('facilities', []); @endphp
+                    @foreach(['AC', 'Proyektor LCD', 'Whiteboard', 'WiFi', 'Komputer PC', 'Sistem Audio'] as $fac)
+                    <label class="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-outline-variant/30 hover:bg-surface-container-low transition-colors group">
+                        <input type="checkbox" name="facilities[]" value="{{ $fac }}" {{ in_array($fac, $facilitiesInput) ? 'checked' : '' }} class="w-4 h-4 text-primary bg-surface-container-low border-outline-variant/50 rounded focus:ring-primary/20">
+                        <span class="font-body-sm text-on-surface group-hover:text-primary transition-colors">{{ $fac }}</span>
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Fasilitas Tambahan (Custom) -->
+            <div class="flex flex-col gap-1.5 mt-2">
+                <label for="custom_facilities" class="font-label-md text-label-md font-semibold text-on-surface">Fasilitas Tambahan (Pisahkan dengan koma)</label>
+                <input type="text" name="custom_facilities" id="custom_facilities" value="{{ old('custom_facilities') }}"
+                       class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                       placeholder="Misal: Podium, Meja Bundar, Dispenser">
+            </div>
+
+            <!-- Deskripsi -->
+            <div class="flex flex-col gap-1.5 mt-2">
+                <label for="description" class="font-label-md text-label-md font-semibold text-on-surface">Deskripsi Singkat</label>
+                <textarea name="description" id="description" rows="3"
+                          class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50 resize-none" 
+                          placeholder="Deskripsi atau catatan khusus untuk ruangan ini...">{{ old('description') }}</textarea>
+            </div>
+
+            <!-- Foto Ruangan -->
+            <div class="flex flex-col gap-1.5 mt-2">
+                <label for="image" class="font-label-md text-label-md font-semibold text-on-surface">Foto Ruangan (Opsional)</label>
+                
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-outline-variant/30 border-dashed rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors group relative cursor-pointer" onclick="document.getElementById('image').click()">
+                    <div class="space-y-2 text-center">
+                        <span class="material-symbols-outlined text-4xl text-on-surface-variant/50 group-hover:text-primary transition-colors">add_photo_alternate</span>
+                        <div class="flex flex-col text-sm text-on-surface-variant">
+                            <span class="font-semibold text-primary">Klik untuk upload foto</span>
+                            <span>atau drag and drop kesini</span>
+                        </div>
+                        <p class="text-xs text-on-surface-variant/50">PNG, JPG, JPEG maksimal 2MB</p>
+                    </div>
+                    <input id="image" name="image" type="file" class="sr-only" accept="image/*">
+                </div>
+                <!-- File name display placeholder -->
+                <p id="file-name-display" class="font-body-sm text-body-sm text-primary font-medium mt-1 hidden"></p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-outline-variant/20">
+                <a href="{{ route('rooms.index') }}" class="px-6 py-2.5 font-label-lg font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-xl transition-all">
+                    Batal
+                </a>
+                <button type="submit" class="flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container font-label-lg font-semibold rounded-xl transition-all shadow-sm">
+                    <span class="material-symbols-outlined text-[20px]">save</span>
+                    Simpan Ruangan
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
-<style>
-.form-control, .form-select { 
-    border-radius: 8px; 
-    border: 1px solid #dee2e6; 
-    padding: 0.75rem 1rem; 
-}
-.form-control:focus, .form-select:focus { 
-    border-color: #3b82f6; 
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
-}
-.form-label { 
-    font-weight: 600; 
-    color: #374151; 
-    font-size: 0.95rem; 
-    margin-bottom: 0.5rem; 
-}
-.facilities-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
-    gap: 0.75rem; 
-    max-height: 400px;
-    overflow-y: auto;
-    padding: 5px;
-}
-.facility-card { 
-    display: flex; 
-    align-items: center; 
-    padding: 0.6rem 0.8rem; 
-    border: 1px solid #e2e8f0; 
-    border-radius: 8px; 
-    background-color: #fff; 
-    color: #64748b; 
-    cursor: pointer; 
-    transition: all 0.2s ease; 
-    width: 100%; 
-    user-select: none; 
-}
-.facility-card:hover { 
-    border-color: #cbd5e1; 
-    background-color: #f8fafc; 
-}
-.btn-check:checked + .facility-card { 
-    background-color: #eff6ff; 
-    border-color: #3b82f6; 
-    color: #1d4ed8; 
-    font-weight: 500; 
-}
-.check-icon { 
-    width: 18px; 
-    height: 18px; 
-    border-radius: 4px; 
-    border: 2px solid #cbd5e1; 
-    margin-right: 10px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    font-size: 10px; 
-    color: transparent; 
-    transition: all 0.2s; 
-}
-.btn-check:checked + .facility-card .check-icon { 
-    background-color: #3b82f6; 
-    border-color: #3b82f6; 
-    color: white; 
-}
-.facility-name { 
-    font-size: 0.9rem; 
-}
-</style>
+<script>
+    // Simple script to show selected file name
+    document.getElementById('image').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name;
+        const display = document.getElementById('file-name-display');
+        if (fileName) {
+            display.textContent = 'File terpilih: ' + fileName;
+            display.classList.remove('hidden');
+        } else {
+            display.classList.add('hidden');
+        }
+    });
+</script>
 @endsection

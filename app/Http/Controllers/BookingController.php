@@ -12,15 +12,39 @@ use Illuminate\Support\Facades\Cache; // ✅ TAMBAHKAN INI
 
 class BookingController extends Controller
 {
+    public function verifyQR(Request $request)
+    {
+        $request->validate(['room_name' => 'required|string']);
+        
+        $roomName = $request->room_name;
+        
+        // Simpan sesi bahwa user baru saja menscan QR untuk ruangan ini
+        // Sesi ini berlaku 15 menit (kita asumsikan user langsung booking)
+        session(['qr_scanned_room' => $roomName]);
+        session(['qr_scanned_time' => now()]);
+        
+        return response()->json(['success' => true, 'redirect' => route('room.info', ['name' => $roomName])]);
+    }
+
     // CREATE FORM - Tetap sama
     public function createFromQR($roomName)
     {
         $roomName = urldecode($roomName);
         
+        // CEK APAKAH BENAR-BENAR DARI SCAN QR
+        if (session('qr_scanned_room') !== $roomName) {
+            return redirect()->route('qr.scanner')->with('error', 'AKSES DITOLAK: Anda wajib melakukan Scan QR Code yang tertempel di pintu ruangan secara langsung untuk bisa melakukan booking.');
+        }
+        
         $room = Room::where('name', $roomName)->first();
         
         if (!$room) {
             return redirect()->route('home')->with('error', 'Ruangan tidak ditemukan.');
+        }
+
+        // TOLAK JIKA ROLE ADALAH ADMIN
+        if (session('role') === 'admin') {
+            return redirect()->route('dashboard.admin')->with('error', 'Tindakan ditolak: Anda login sebagai Administrator. Hanya perwakilan kelas yang dapat melakukan booking.');
         }
         
         return view('booking.create', [
@@ -37,8 +61,18 @@ class BookingController extends Controller
             'mata_kuliah' => 'required',
             'dosen' => 'required',
             'waktu_berakhir' => 'required|date|after:30 minutes',
-            'keterangan' => 'nullable'
+            'keterangan' => 'nullable',
+            'source' => 'required|in:qr'
         ]);
+
+        // Cek login dan role
+        if (!session()->has('user')) {
+            return redirect()->route('login')->with('error', 'Anda harus login sebagai perwakilan kelas untuk melakukan booking.');
+        }
+
+        if (session('role') !== 'user') {
+            return back()->with('error', 'Hanya perwakilan kelas (user) yang dapat melakukan booking.');
+        }
 
         try {
             // 🚀 Use Laravel's timezone config (set in config/app.php)
@@ -92,6 +126,10 @@ class BookingController extends Controller
 
             // Clear relevant caches
             Cache::forget('admin_dashboard_stats');
+            
+            // Hapus sesi QR setelah sukses booking agar tidak bisa di-reuse
+            session()->forget('qr_scanned_room');
+            session()->forget('qr_scanned_time');
 
             return redirect()
                 ->route('dashboard.kelas')

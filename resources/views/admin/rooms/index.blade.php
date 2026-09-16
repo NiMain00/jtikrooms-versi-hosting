@@ -1,234 +1,116 @@
-@extends('layouts.app')
+@extends('layouts.stitch')
 
 @section('title', 'Manajemen Ruangan - Dasher')
 
-@section('styles')
-<link rel="stylesheet" href="{{ asset('css/admin.css') }}" />
-<style>
-.luas-badge {
-    background: #e0f2fe;
-    color: #0369a1;
-    padding: 0.4rem 0.8rem;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    display: inline-block;
-}
-</style>
- 
 @section('content')
-<div class="content-wrapper">
-    <div class="admin-header">
-        <div class="header-content">
-            <div class="header-text">
-                <h1><i class="fas fa-door-open me-2"></i>Manajemen Ruangan</h1>
-                <p class="welcome-text">Kelola data ruangan dan fasilitas</p>
-            </div>
-            <div class="header-actions">
-                <a href="{{ route('rooms.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Tambah Ruangan
-                </a>
-            </div>
+<div class="p-space-md lg:p-space-xl flex flex-col gap-space-lg max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-space-md">
+        <div>
+            <h1 class="font-headline-md text-headline-md font-bold text-on-surface flex items-center gap-space-xs">
+                <span class="material-symbols-outlined text-primary text-3xl">meeting_room</span>
+                Manajemen Ruangan
+            </h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-1">
+                Kelola daftar ruangan laboratorium dan kelas yang tersedia untuk dipinjam.
+            </p>
         </div>
+        
+        <a href="{{ route('rooms.create') }}" class="flex items-center gap-2 px-4 py-2.5 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container font-semibold text-sm rounded-xl transition-all shadow-sm">
+            <span class="material-symbols-outlined text-lg">add</span>
+            Tambah Ruangan
+        </a>
     </div>
 
+    <!-- Alert / Flash Messages -->
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    <div class="stats-grid">
-        <div class="stat-card primary">
-            <div class="stat-icon">
-                <i class="fas fa-door-open"></i>
-            </div>
-            <div class="stat-content">
-                <span class="stat-number">{{ $rooms->count() }}</span>
-                <span class="stat-label">Total Ruangan</span>
-            </div>
-            <div class="stat-trend">
-                <i class="fas fa-building"></i>
-            </div>
-        </div>
-        
-        <div class="stat-card success">
-            <div class="stat-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="stat-content">
-                <span class="stat-number">{{ $rooms->where('status', 'available')->count() }}</span>
-                <span class="stat-label">Tersedia</span>
-            </div>
-            <div class="stat-trend">
-                <i class="fas fa-calendar-check"></i>
-            </div>
-        </div>
-        
-        <div class="stat-card warning">
-            <div class="stat-icon">
-                <i class="fas fa-tools"></i>
-            </div>
-            <div class="stat-content">
-                <span class="stat-number">{{ $rooms->where('status', 'maintenance')->count() }}</span>
-                <span class="stat-label">Maintenance</span>
-            </div>
-            <div class="stat-trend">
-                <i class="fas fa-wrench"></i>
-            </div>
-        </div>
-        
-        <div class="stat-card danger">
-            <div class="stat-icon">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="stat-content">
-                <span class="stat-number">{{ $rooms->where('status', 'occupied')->count() }}</span>
-                <span class="stat-label">Terpakai</span>
-            </div>
-            <div class="stat-trend">
-                <i class="fas fa-users"></i>
-            </div>
-        </div>
+    <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex items-start gap-3 shadow-sm">
+        <span class="material-symbols-outlined text-emerald-600">check_circle</span>
+        <p class="font-body-md text-body-md font-medium">{{ session('success') }}</p>
     </div>
+    @endif
 
-    <div class="card">
-        <div class="card-header">
-            <h3><i class="fas fa-list me-2"></i>Daftar Ruangan</h3>
-            <span class="badge bg-primary">{{ $rooms->count() }} Ruangan</span>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover" id="roomsTable">
-                    <thead>
-                        <tr>
-                            <th>Nama Ruangan</th>
-                            <th>Kapasitas</th>
-                            <th>Luas</th>
-                            <th>Fasilitas</th>
-                            <th>Status</th>
-                            <th>Lokasi</th>
-                            <th>QR Code</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($rooms as $room)
-                        <tr>
-                            <td>
-                                <div class="room-info">
-                                    <strong class="room-name">{{ $room->display_name ?? $room->name }}</strong>
-                                    <small class="room-code text-muted">{{ $room->name }}</small>
-                                    @if($room->description)
-                                    <p class="room-desc">{{ Str::limit($room->description, 50) }}</p>
-                                    @endif
+    <!-- Data Table -->
+    <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[800px]">
+                <thead>
+                    <tr class="bg-surface-container-low border-b border-outline-variant/30">
+                        <th class="font-label-md text-label-md text-on-surface-variant font-semibold py-3 px-space-md w-16">NO</th>
+                        <th class="font-label-md text-label-md text-on-surface-variant font-semibold py-3 px-space-md w-32">FOTO</th>
+                        <th class="font-label-md text-label-md text-on-surface-variant font-semibold py-3 px-space-md">NAMA RUANGAN</th>
+                        <th class="font-label-md text-label-md text-on-surface-variant font-semibold py-3 px-space-md w-32">KAPASITAS</th>
+                        <th class="font-label-md text-label-md text-on-surface-variant font-semibold py-3 px-space-md w-40">STATUS</th>
+                        <th class="font-label-md text-label-md text-on-surface-variant font-semibold py-3 px-space-md w-48 text-right">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/20">
+                    @forelse($rooms as $index => $room)
+                    <tr class="hover:bg-surface-container-lowest/50 transition-colors">
+                        <td class="py-3 px-space-md">
+                            <span class="font-body-sm text-body-sm text-on-surface-variant">{{ $index + 1 }}</span>
+                        </td>
+                        <td class="py-3 px-space-md">
+                            @if($room->image)
+                                <img src="{{ asset('storage/' . $room->image) }}" alt="Foto Ruangan" class="w-12 h-12 object-cover rounded-lg shadow-sm border border-outline-variant/20">
+                            @else
+                                <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant/50 border border-outline-variant/20">
+                                    <span class="material-symbols-outlined">image_not_supported</span>
                                 </div>
-                            </td>
-                            <td>
-                                <span class="capacity-badge">{{ $room->capacity }} orang</span>
-                            </td>
-                            <td>
-                                <span class="luas-badge">{{ $room->luas ?? '0' }} m²</span>
-                            </td>
-                            <td>
-                                @if($room->facilities && count($room->facilities) > 0)
-                                    <div class="facilities-tags">
-                                        @foreach(array_slice($room->facilities, 0, 3) as $facility)
-                                            <span class="facility-tag">{{ $facility }}</span>
-                                        @endforeach
-                                        @if(count($room->facilities) > 3)
-                                            <span class="facility-tag-more">+{{ count($room->facilities) - 3 }}</span>
-                                        @endif
-                                    </div>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($room->status === 'available')
-                                    <span class="status-badge available">Tersedia</span>
-                                @elseif($room->status === 'maintenance')
-                                    <span class="status-badge maintenance">Maintenance</span>
-                                @else
-                                    <span class="status-badge occupied">Terpakai</span>
-                                @endif
-                            </td>
-                            <td>
-                                <span class="location-text">{{ $room->location ?? 'Gedung JTIK' }}</span>
-                            </td>
-                            <td>
-                                @if($room->qr_code && file_exists(public_path($room->qr_code)))
-                                    <div class="qr-preview">
-                                        <a href="{{ asset($room->qr_code) }}" download="QR-{{ $room->name }}.png" title="Download QR">
-                                            <img src="{{ asset($room->qr_code) }}" class="qr-thumbnail" alt="QR">
-                                        </a>
-                                    </div>
-                                @else
-                                    <span class="text-muted small">-</span>
-                                @endif
-                            </td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a href="{{ route('rooms.show', $room) }}" 
-                                       class="btn-action btn-view" title="Detail">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('rooms.edit', $room) }}" 
-                                       class="btn-action btn-edit" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('rooms.destroy', $room) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="btn-action btn-delete" 
-                                                title="Hapus"
-                                                onclick="return confirm('Hapus ruangan {{ $room->name }}?')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="8" class="text-center py-5">
-                                <div class="empty-state">
-                                    <div class="empty-icon">
-                                        <i class="fas fa-door-open fa-3x"></i>
-                                    </div>
-                                    <h4>Belum ada ruangan</h4>
-                                    <p class="text-muted">Mulai dengan menambahkan ruangan pertama</p>
-                                    <a href="{{ route('rooms.create') }}" class="btn btn-primary">
-                                        <i class="fas fa-plus me-2"></i>Tambah Ruangan Pertama
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="d-flex justify-content-end mt-4">
-                {{ $rooms->links('pagination::bootstrap-5') }}
-            </div>
+                            @endif
+                        </td>
+                        <td class="py-3 px-space-md">
+                            <span class="font-title-sm text-title-sm font-bold text-on-surface">{{ $room->name }}</span>
+                        </td>
+                        <td class="py-3 px-space-md">
+                            <span class="font-body-md text-body-md text-on-surface flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm text-on-surface-variant">person</span>
+                                {{ $room->capacity }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-space-md">
+                            @if($room->status == 'available')
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Tersedia
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Digunakan
+                                </span>
+                            @endif
+                        </td>
+                        <td class="py-3 px-space-md text-right">
+                            <div class="flex justify-end gap-2">
+                                <a href="{{ route('rooms.print', $room->id) }}" target="_blank" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Download QR Code (PDF)">
+                                    <span class="material-symbols-outlined text-[20px]">print</span>
+                                </a>
+                                <a href="{{ route('rooms.edit', $room->id) }}" class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </a>
+                                <form action="{{ route('rooms.destroy', $room->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus ruangan ini? Semua data terkait (booking, dll) mungkin akan terpengaruh.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-2 text-error hover:bg-error-container/50 rounded-lg transition-colors" title="Hapus">
+                                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="py-12 px-4 text-center">
+                            <div class="flex flex-col items-center justify-center text-on-surface-variant/60">
+                                <span class="material-symbols-outlined text-5xl mb-2">meeting_room</span>
+                                <p class="font-body-md text-body-md font-medium text-on-surface">Belum ada ruangan terdaftar</p>
+                                <p class="font-body-sm text-body-sm mt-1">Silakan tambahkan ruangan baru untuk mulai.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Optional: Add DataTables for better table functionality
-    // $('#roomsTable').DataTable();
-});
-</script>
 @endsection

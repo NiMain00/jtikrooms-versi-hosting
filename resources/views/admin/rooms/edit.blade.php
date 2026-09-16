@@ -1,314 +1,290 @@
-@extends('layouts.app')
+@extends('layouts.stitch')
 
 @section('title', 'Edit Ruangan - Dasher')
 
-@section('styles')
-<link rel="stylesheet" href="{{ asset('css/admin.css') }}" />
-<style>
-.form-control, .form-select { 
-    border-radius: 8px; 
-    border: 1px solid #dee2e6; 
-    padding: 0.75rem 1rem; 
-}
-.form-control:focus, .form-select:focus { 
-    border-color: #3b82f6; 
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
-}
-.form-label { 
-    font-weight: 600; 
-    color: #374151; 
-    font-size: 0.95rem; 
-    margin-bottom: 0.5rem; 
-}
-.facilities-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
-    gap: 0.75rem; 
-    max-height: 400px;
-    overflow-y: auto;
-    padding: 5px;
-}
-.facility-card { 
-    display: flex; 
-    align-items: center; 
-    padding: 0.6rem 0.8rem; 
-    border: 1px solid #e2e8f0; 
-    border-radius: 8px; 
-    background-color: #fff; 
-    color: #64748b; 
-    cursor: pointer; 
-    transition: all 0.2s ease; 
-    width: 100%; 
-    user-select: none; 
-}
-.facility-card:hover { 
-    border-color: #cbd5e1; 
-    background-color: #f8fafc; 
-}
-.btn-check:checked + .facility-card { 
-    background-color: #eff6ff; 
-    border-color: #3b82f6; 
-    color: #1d4ed8; 
-    font-weight: 500; 
-}
-.check-icon { 
-    width: 18px; 
-    height: 18px; 
-    border-radius: 4px; 
-    border: 2px solid #cbd5e1; 
-    margin-right: 10px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    font-size: 10px; 
-    color: transparent; 
-    transition: all 0.2s; 
-}
-.btn-check:checked + .facility-card .check-icon { 
-    background-color: #3b82f6; 
-    border-color: #3b82f6; 
-    color: white; 
-}
-.facility-name { 
-    font-size: 0.9rem; 
-}
-</style>
- 
 @section('content')
-<div class="content-wrapper">
-    <div class="admin-header">
-        <div class="header-content">
-            <div class="header-text">
-                <h1><i class="fas fa-edit me-2"></i>Edit Ruangan</h1>
-                <p class="welcome-text">Update informasi {{ $room->name }}</p>
-            </div>
-            <div class="header-actions">
-                <a href="{{ route('rooms.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Kembali
-                </a>
-            </div>
+<div class="p-space-md lg:p-space-xl flex flex-col gap-space-lg max-w-5xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-space-md mb-2">
+        <div class="flex items-center gap-space-sm">
+            <a href="{{ route('rooms.index') }}" class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+                <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            </a>
+            <h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">
+                Edit Ruangan: <span class="text-primary">{{ $room->name }}</span>
+            </h1>
         </div>
-    </div>
-
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-white py-3">
-            <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-door-open me-2"></i>Form Edit Data</h5>
-        </div>
-        <div class="card-body p-4">
-            <form action="{{ route('rooms.update', $room->id) }}" method="POST">
+        
+        <div class="flex items-center gap-2">
+            <form action="{{ route('rooms.generate-qr', $room->id) }}" method="POST" class="inline">
                 @csrf
-                @method('PUT')
-                
-                <div class="row g-4">
-                    <div class="col-lg-6">
-                        <div class="mb-3">
-                            <label class="form-label">Kode Ruangan <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" 
-                                   value="{{ old('name', $room->name) }}" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Nama Tampilan <span class="text-danger">*</span></label>
-                            <input type="text" name="display_name" class="form-control" 
-                                   value="{{ old('display_name', $room->display_name) }}" required>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Kapasitas <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <input type="number" name="capacity" class="form-control" 
-                                               value="{{ old('capacity', $room->capacity) }}" min="1" required>
-                                        <span class="input-group-text">Orang</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Luas Ruangan <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <input type="number" name="luas" class="form-control" step="0.01"
-                                               value="{{ old('luas', $room->luas) }}" min="5" max="500" required>
-                                        <span class="input-group-text">m²</span>
-                                    </div>
-                                    <small class="text-muted">Min. 5m², Max. 500m²</small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Lantai</label>
-                                    <select name="lantai" class="form-select">
-                                        <option value="">Pilih Lantai</option>
-                                        <option value="1" {{ old('lantai', $room->lantai) == '1' ? 'selected' : '' }}>Lantai 1</option>
-                                        <option value="2" {{ old('lantai', $room->lantai) == '2' ? 'selected' : '' }}>Lantai 2</option>
-                                        <option value="3" {{ old('lantai', $room->lantai) == '3' ? 'selected' : '' }}>Lantai 3</option>
-                                        <option value="4" {{ old('lantai', $room->lantai) == '4' ? 'selected' : '' }}>Lantai 4</option>
-                                        <option value="5" {{ old('lantai', $room->lantai) == '5' ? 'selected' : '' }}>Lantai 5</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Lokasi</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="fas fa-map-marker-alt text-danger"></i></span>
-                                        <input type="text" name="location" class="form-control" 
-                                               value="{{ old('location', $room->location) }}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Tipe Ruangan <span class="text-danger">*</span></label>
-                                    <select name="type" class="form-select" required>
-                                        <option value="">Pilih Tipe</option>
-                                        <option value="kelas" {{ old('type', $room->type) == 'kelas' ? 'selected' : '' }}>Kelas / Teori</option>
-                                        <option value="lab" {{ old('type', $room->type) == 'lab' ? 'selected' : '' }}>Laboratorium</option>
-                                        <option value="other" {{ old('type', $room->type) == 'other' ? 'selected' : '' }}>Ruangan Lainnya</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Status <span class="text-danger">*</span></label>
-                            <select name="status" class="form-select" required>
-                                <option value="available" {{ old('status', $room->status) == 'available' ? 'selected' : '' }}>Tersedia</option>
-                                <option value="maintenance" {{ old('status', $room->status) == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                                <option value="occupied" {{ old('status', $room->status) == 'occupied' ? 'selected' : '' }}>Terpakai</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Deskripsi</label>
-                            <textarea name="description" class="form-control" rows="3">{{ old('description', $room->description) }}</textarea>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6">
-                        <div class="bg-light p-4 rounded-3 h-100 border">
-                            <label class="form-label d-block fw-bold mb-3"><i class="fas fa-list-check me-2"></i>Fasilitas Ruangan</label>
-                            
-                            <div class="facilities-grid">
-                                @php
-                                    $defaultFacilities = [
-                                        'AC' => 'AC / Pendingin',
-                                        'Proyektor' => 'Proyektor LCD',
-                                        'Whiteboard' => 'Papan Tulis',
-                                        'WiFi' => 'Koneksi WiFi',
-                                        'Komputer' => 'Komputer PC',
-                                        'Sound System' => 'Sound System',
-                                        'Kursi Ergonomis' => 'Kursi Ergonomis',
-                                        'Meja Rapat' => 'Meja Rapat',
-                                        'Smart TV' => 'Smart TV / Monitor',
-                                        'CCTV' => 'Kamera CCTV',
-                                        'Dispenser' => 'Dispenser Air',
-                                        'Stop Kontak' => 'Stop Kontak',
-                                        'LED Projector' => 'LED Projector',
-                                        'Sistem Audio' => 'Sistem Audio',
-                                        'Kursi Lipat' => 'Kursi Lipat',
-                                        'AC Sentral' => 'AC Sentral'
-                                    ];
-                                    
-                                    $currentFacilities = $room->facilities ?? [];
-                                    $customFacilities = array_diff($currentFacilities, array_keys($defaultFacilities));
-                                    $customString = implode(', ', $customFacilities);
-                                @endphp
-
-                                @foreach($defaultFacilities as $val => $label)
-                                    <div class="facility-option">
-                                        <input type="checkbox" 
-                                               class="btn-check" 
-                                               name="facilities[]" 
-                                               id="fac_{{ Str::slug($val) }}" 
-                                               value="{{ $val }}"
-                                               {{ in_array($val, $currentFacilities) ? 'checked' : '' }}>
-                                        
-                                        <label class="facility-card" for="fac_{{ Str::slug($val) }}">
-                                            <div class="check-icon"><i class="fas fa-check"></i></div>
-                                            <span class="facility-name">{{ $label }}</span>
-                                        </label>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <div class="mt-4">
-                                <label class="form-label small text-muted">Fasilitas Lainnya (Ketik manual)</label>
-                                <input type="text" name="custom_facilities" class="form-control" 
-                                       placeholder="Contoh: Webcam, Green Screen, Papan Tulis Elektronik"
-                                       value="{{ old('custom_facilities', $customString) }}">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-4">
-
-                <div class="d-flex justify-content-end gap-2">
-                    <a href="{{ route('rooms.index') }}" class="btn btn-light border">Batal</a>
-                    <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-2"></i>Update Ruangan</button>
-                </div>
+                <button type="submit" class="flex items-center gap-2 px-4 py-2.5 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container font-semibold text-sm rounded-xl transition-all shadow-sm">
+                    <span class="material-symbols-outlined text-[20px]">qr_code</span>
+                    Generate QR Baru
+                </button>
             </form>
         </div>
     </div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3 border-bottom">
-            <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-qrcode me-2"></i>Pengaturan QR Code</h5>
+    <!-- Error Validation -->
+    @if ($errors->any())
+    <div class="p-4 bg-error-container/30 border border-error/20 rounded-xl mb-4">
+        <div class="flex items-start gap-3 text-error">
+            <span class="material-symbols-outlined">warning</span>
+            <div>
+                <p class="font-label-lg font-bold">Terjadi Kesalahan</p>
+                <ul class="list-disc list-inside mt-1 font-body-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
-        <div class="card-body p-4">
-            <div class="d-flex align-items-center gap-4 flex-wrap">
-                
-                <div class="text-center bg-light p-3 border rounded" style="min-width: 120px;">
-                    @if($room->qr_code && file_exists(public_path($room->qr_code)))
-                        <img src="{{ asset($room->qr_code) }}" alt="QR" width="100" class="d-block mb-2 bg-white p-1 border rounded">
-                        <span class="badge bg-success w-100">Aktif</span>
-                    @else
-                        <div class="d-flex align-items-center justify-content-center bg-white border rounded" style="width:100px; height:100px;">
-                            <i class="fas fa-qrcode text-muted fa-3x opacity-25"></i>
+    </div>
+    @endif
+    
+    @if(session('success'))
+    <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex items-start gap-3 shadow-sm mb-4">
+        <span class="material-symbols-outlined text-emerald-600">check_circle</span>
+        <p class="font-body-md text-body-md font-medium">{{ session('success') }}</p>
+    </div>
+    @endif
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-space-md">
+        <!-- Form Container -->
+        <div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-sm overflow-hidden p-space-lg">
+            <form action="{{ route('rooms.update', $room->id) }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-space-md">
+                @csrf
+                @method('PUT')
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+                    <!-- Nama Ruangan (Kode) -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="name" class="font-label-md text-label-md font-semibold text-on-surface">Kode / Nama Singkat <span class="text-error">*</span></label>
+                        <input type="text" name="name" id="name" value="{{ old('name', $room->name) }}" required
+                               class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                               placeholder="Misal: AE 101">
+                    </div>
+                    
+                    <!-- Nama Tampilan Lengkap -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="display_name" class="font-label-md text-label-md font-semibold text-on-surface">Nama Tampilan <span class="text-error">*</span></label>
+                        <input type="text" name="display_name" id="display_name" value="{{ old('display_name', $room->display_name) }}" required
+                               class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                               placeholder="Misal: Lab Komputer Jaringan">
+                    </div>
+
+                    <!-- Tipe Ruangan -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="type" class="font-label-md text-label-md font-semibold text-on-surface">Tipe Ruangan <span class="text-error">*</span></label>
+                        <div class="relative">
+                            <select name="type" id="type" required
+                                    class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface appearance-none">
+                                <option value="">-- Pilih Tipe --</option>
+                                <option value="kelas" {{ old('type', $room->type) == 'kelas' ? 'selected' : '' }}>Ruang Kelas</option>
+                                <option value="lab" {{ old('type', $room->type) == 'lab' ? 'selected' : '' }}>Laboratorium</option>
+                                <option value="other" {{ old('type', $room->type) == 'other' ? 'selected' : '' }}>Lainnya</option>
+                            </select>
+                            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">arrow_drop_down</span>
                         </div>
-                        <span class="badge bg-secondary w-100 mt-2">Non-Aktif</span>
-                    @endif
+                    </div>
+
+                    <!-- Kapasitas -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="capacity" class="font-label-md text-label-md font-semibold text-on-surface">Kapasitas (Orang) <span class="text-error">*</span></label>
+                        <input type="number" name="capacity" id="capacity" value="{{ old('capacity', $room->capacity) }}" required min="1"
+                               class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                               placeholder="Misal: 40">
+                    </div>
+
+                    <!-- Luas -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="luas" class="font-label-md text-label-md font-semibold text-on-surface">Luas (m²) <span class="text-error">*</span></label>
+                        <input type="number" name="luas" id="luas" value="{{ old('luas', $room->luas) }}" required min="5" max="500" step="0.1"
+                               class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                               placeholder="Misal: 48.5">
+                    </div>
+                    
+                    <!-- Status -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="status" class="font-label-md text-label-md font-semibold text-on-surface">Status <span class="text-error">*</span></label>
+                        <div class="relative">
+                            <select name="status" id="status" required
+                                    class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface appearance-none">
+                                <option value="available" {{ old('status', $room->status) == 'available' ? 'selected' : '' }}>Tersedia</option>
+                                <option value="occupied" {{ old('status', $room->status) == 'occupied' ? 'selected' : '' }}>Sedang Digunakan</option>
+                                <option value="maintenance" {{ old('status', $room->status) == 'maintenance' ? 'selected' : '' }}>Dalam Perawatan</option>
+                            </select>
+                            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">arrow_drop_down</span>
+                        </div>
+                    </div>
+
+                    <!-- Lantai -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="lantai" class="font-label-md text-label-md font-semibold text-on-surface">Lantai</label>
+                        <input type="text" name="lantai" id="lantai" value="{{ old('lantai', $room->lantai) }}"
+                               class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                               placeholder="Misal: 1">
+                    </div>
+                    
+                    <!-- Lokasi -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="location" class="font-label-md text-label-md font-semibold text-on-surface">Gedung / Lokasi</label>
+                        <input type="text" name="location" id="location" value="{{ old('location', $room->location) }}"
+                               class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                               placeholder="Misal: Gedung JTIK">
+                    </div>
                 </div>
 
-                <div class="flex-grow-1">
-                    @if($room->qr_code && file_exists(public_path($room->qr_code)))
-                        <h6 class="fw-bold text-success mb-1">QR Code Tersedia</h6>
-                        <p class="text-muted small mb-3">QR code ini siap digunakan. Anda bisa mendownloadnya atau membuat ulang jika link berubah.</p>
-                        
-                        <div class="d-flex gap-2 flex-wrap">
-                            <a href="{{ asset($room->qr_code) }}" download class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-download me-2"></i>Download Gambar
-                            </a>
+                <!-- Fasilitas (Checkboxes) -->
+                <div class="flex flex-col gap-1.5 mt-2">
+                    <label class="font-label-md text-label-md font-semibold text-on-surface">Fasilitas Standar</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        @php 
+                            $rawFacilities = $room->facilities ?? [];
+                            // Ensure it's an array if it's stored as JSON string
+                            $facilitiesList = is_string($rawFacilities) ? json_decode($rawFacilities, true) : $rawFacilities;
+                            $facilitiesList = is_array($facilitiesList) ? $facilitiesList : [];
                             
-                            <a href="{{ route('rooms.print', $room->id) }}" class="btn btn-outline-danger btn-sm" target="_blank">
-                                <i class="fas fa-file-pdf me-2"></i>Cetak Label PDF
-                            </a>
+                            $facilitiesInput = old('facilities', $facilitiesList); 
+                            $standardFacs = ['AC', 'Proyektor LCD', 'Whiteboard', 'WiFi', 'Komputer PC', 'Sistem Audio'];
+                            
+                            // Cari yang custom (tidak ada di standard)
+                            $customFacs = array_diff($facilitiesInput, $standardFacs);
+                            $customFacsStr = implode(', ', $customFacs);
+                        @endphp
+                        @foreach($standardFacs as $fac)
+                        <label class="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-outline-variant/30 hover:bg-surface-container-low transition-colors group">
+                            <input type="checkbox" name="facilities[]" value="{{ $fac }}" {{ in_array($fac, $facilitiesInput) ? 'checked' : '' }} class="w-4 h-4 text-primary bg-surface-container-low border-outline-variant/50 rounded focus:ring-primary/20">
+                            <span class="font-body-sm text-on-surface group-hover:text-primary transition-colors">{{ $fac }}</span>
+                        </label>
+                        @endforeach
+                    </div>
+                </div>
 
-                            <button type="button" onclick="if(confirm('Yakin generate ulang? File lama akan tertimpa.')){document.getElementById('form-generate-qr').submit()}" class="btn btn-outline-secondary btn-sm">
-                                <i class="fas fa-sync-alt me-2"></i>Generate Ulang
-                            </button>
+                <!-- Fasilitas Tambahan (Custom) -->
+                <div class="flex flex-col gap-1.5 mt-2">
+                    <label for="custom_facilities" class="font-label-md text-label-md font-semibold text-on-surface">Fasilitas Tambahan (Pisahkan dengan koma)</label>
+                    <input type="text" name="custom_facilities" id="custom_facilities" value="{{ old('custom_facilities', $customFacsStr) }}"
+                           class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50" 
+                           placeholder="Misal: Podium, Meja Bundar, Dispenser">
+                </div>
+
+                <!-- Deskripsi -->
+                <div class="flex flex-col gap-1.5 mt-2">
+                    <label for="description" class="font-label-md text-label-md font-semibold text-on-surface">Deskripsi Singkat</label>
+                    <textarea name="description" id="description" rows="3"
+                              class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-on-surface placeholder:text-on-surface-variant/50 resize-none" 
+                              placeholder="Deskripsi atau catatan khusus untuk ruangan ini...">{{ old('description', $room->description) }}</textarea>
+                </div>
+
+                <!-- Foto Ruangan -->
+                <div class="flex flex-col gap-1.5 mt-2">
+                    <label for="image" class="font-label-md text-label-md font-semibold text-on-surface">Foto Ruangan (Opsional)</label>
+                    
+                    @if($room->image)
+                    <div class="mb-3 flex items-center gap-4 p-4 rounded-xl border border-outline-variant/30 bg-surface-container-lowest">
+                        <img src="{{ asset('storage/' . $room->image) }}" alt="Foto Saat Ini" class="w-20 h-20 object-cover rounded-lg shadow-sm border border-outline-variant/20">
+                        <div>
+                            <p class="font-label-sm text-label-sm uppercase text-on-surface-variant font-bold mb-1">Foto Saat Ini</p>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant/80">Unggah foto baru jika ingin mengganti foto di samping.</p>
                         </div>
-                    @else
-                        <h6 class="fw-bold text-warning mb-1">QR Code Belum Dibuat</h6>
-                        <p class="text-muted small mb-3">Klik tombol di bawah untuk membuat QR Code secara otomatis.</p>
-                        
-                        <button type="button" onclick="document.getElementById('form-generate-qr').submit()" class="btn btn-primary btn-sm">
-                            <i class="fas fa-magic me-2"></i>Buat QR Code Sekarang
-                        </button>
+                    </div>
                     @endif
+                    
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-outline-variant/30 border-dashed rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors group relative cursor-pointer" onclick="document.getElementById('image').click()">
+                        <div class="space-y-2 text-center">
+                            <span class="material-symbols-outlined text-4xl text-on-surface-variant/50 group-hover:text-primary transition-colors">add_photo_alternate</span>
+                            <div class="flex flex-col text-sm text-on-surface-variant">
+                                <span class="font-semibold text-primary">Klik untuk ganti foto</span>
+                                <span>atau drag and drop kesini</span>
+                            </div>
+                            <p class="text-xs text-on-surface-variant/50">PNG, JPG, JPEG maksimal 2MB</p>
+                        </div>
+                        <input id="image" name="image" type="file" class="sr-only" accept="image/*">
+                    </div>
+                    <!-- File name display placeholder -->
+                    <p id="file-name-display" class="font-body-sm text-body-sm text-primary font-medium mt-1 hidden"></p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-outline-variant/20">
+                    <a href="{{ route('rooms.index') }}" class="px-6 py-2.5 font-label-lg font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-xl transition-all">
+                        Batal
+                    </a>
+                    <button type="submit" class="flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container font-label-lg font-semibold rounded-xl transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-[20px]">save</span>
+                        Perbarui Ruangan
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- QR Code Section Side Panel -->
+        <div class="lg:col-span-1 flex flex-col gap-space-md">
+            <!-- QR Code Box -->
+            <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+                <div class="px-space-md py-4 border-b border-outline-variant/20 bg-surface-container-lowest flex items-center justify-between">
+                    <h3 class="font-title-md text-title-md font-bold text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">qr_code_2</span>
+                        QR Code Ruangan
+                    </h3>
+                </div>
+                
+                <div class="p-space-lg flex flex-col items-center justify-center gap-space-md bg-surface-container-low/30">
+                    @if($room->qr_code)
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-outline-variant/30 inline-block w-full text-center">
+                            {!! $room->qr_code !!}
+                        </div>
+                        <p class="font-body-sm text-center text-on-surface-variant/80">Scan QR Code ini untuk akses menu booking ruangan secara langsung.</p>
+                        
+                        <a href="{{ route('rooms.print', $room->id) }}" target="_blank" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-secondary-container text-on-secondary-container hover:bg-secondary hover:text-on-secondary font-semibold text-sm rounded-xl transition-all shadow-sm mt-2">
+                            <span class="material-symbols-outlined text-[20px]">print</span>
+                            Cetak / Print PDF
+                        </a>
+                    @else
+                        <div class="flex flex-col items-center justify-center py-6 text-center text-on-surface-variant/60 w-full">
+                            <span class="material-symbols-outlined text-6xl mb-3 text-surface-variant">qr_code_scanner</span>
+                            <p class="font-title-sm font-bold text-on-surface">QR Code Belum Tersedia</p>
+                            <p class="font-body-sm mt-1 mb-4">Silakan generate QR Code terlebih dahulu untuk ruangan ini.</p>
+                            
+                            <form action="{{ route('rooms.generate-qr', $room->id) }}" method="POST" class="w-full">
+                                @csrf
+                                <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-on-primary hover:bg-primary-container font-semibold text-sm rounded-xl transition-all shadow-sm">
+                                    <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                                    Generate Sekarang
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Insight -->
+            <div class="bg-primary/5 border border-primary/20 rounded-2xl p-space-md flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[20px]">lightbulb</span>
+                </div>
+                <div>
+                    <h3 class="font-title-sm font-bold text-primary mb-1">Cetak QR Code</h3>
+                    <p class="font-body-sm text-on-surface-variant">QR Code digunakan oleh pengguna untuk memindai pintu masuk dan melakukan <i>booking</i>. Pastikan mencetak dan menempelkannya di pintu ruangan.</p>
                 </div>
             </div>
         </div>
     </div>
-
-    <form id="form-generate-qr" action="{{ route('rooms.generate-qr', $room->id) }}" method="POST" style="display: none;">
-        @csrf
-    </form>
-
 </div>
+
+<script>
+    // Simple script to show selected file name
+    document.getElementById('image').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name;
+        const display = document.getElementById('file-name-display');
+        if (fileName) {
+            display.textContent = 'File terpilih: ' + fileName;
+            display.classList.remove('hidden');
+        } else {
+            display.classList.add('hidden');
+        }
+    });
+</script>
 @endsection

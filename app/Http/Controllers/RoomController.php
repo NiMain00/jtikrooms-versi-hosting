@@ -218,5 +218,5 @@ public function update(Request $request, Room $room)
     }
     
     public function edit(Room $room) { return view('admin.rooms.edit', compact('room')); }
-    public function show(Room $room) { return view('admin.rooms.show', compact('room')); }
+    public function show(Room $room) { return redirect()->route('rooms.edit', $room->id); }
 }
