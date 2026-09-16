@@ -7,6 +7,7 @@ use App\Models\Room;
 use App\Models\Booking;
 use App\Models\Comment;
 use App\Models\Queue; // ✅ TAMBAH INI!
+use App\Models\AboutJtik;
 use Carbon\Carbon;
 
 class PageController extends Controller
@@ -61,7 +62,13 @@ class PageController extends Controller
 
     public function about()
     {
-        return view('about');
+        // view 'about' belum ada di repo, fallback ke halaman informasi (versi hosting)
+        // agar route /about tidak 500. Kalau nanti ada about.blade.php, pakai itu.
+        if (view()->exists('about')) {
+            return view('about');
+        }
+        $about = AboutJtik::first();
+        return view('informasi', compact('about'));
     }
     
     public function informasi()
