@@ -205,7 +205,7 @@
                         </div>
                         
                         <div class="relative h-36 rounded-xl overflow-hidden shadow-sm group">
-                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="/img/ruangan.jpg" onerror="this.src='https://via.placeholder.com/600x300?text=Ruangan'"/>
+                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="/img/ruangan.jpg" onerror="this.onerror=null;this.src='/img/ruangan.jpg'"/>
                             <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/40 to-transparent flex flex-col justify-end p-space-sm">
                                 <span class="font-title-md text-title-md text-on-primary font-bold">{{ $room->display_name ?? $roomName }}</span>
                             </div>

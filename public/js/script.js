@@ -243,7 +243,7 @@ async function renderRooms(filter = 'kelas') {
         <img src="/img/ruangan.jpg" 
              alt="${room.name}" 
              class="room-image"
-             onerror="this.src='https://via.placeholder.com/400x200/3B82F6/FFFFFF?text=Dasher+Room'">
+             onerror="this.src='/img/ruangan.jpg'">
         <div class="room-status-badge ${statusInfo.class}">
             <i class="fas ${statusInfo.icon} me-1"></i>${statusInfo.text}
         </div>
@@ -396,7 +396,7 @@ function setupSearch() {
         <img src="/img/ruangan.jpg" 
              alt="${room.name}" 
              class="room-image"
-             onerror="this.src='https://via.placeholder.com/400x200/3B82F6/FFFFFF?text=Dasher+Room'">
+             onerror="this.src='/img/ruangan.jpg'">
         <div class="room-status-badge ${statusInfo.class}">
             <i class="fas ${statusInfo.icon} me-1"></i>${statusInfo.text}
         </div>

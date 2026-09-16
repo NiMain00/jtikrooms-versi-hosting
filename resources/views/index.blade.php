@@ -211,7 +211,7 @@
                             @if($room->image)
                                 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ asset('storage/' . $room->image) }}"/>
                             @else
-                                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://via.placeholder.com/600x400?text=Ruangan"/>
+                                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ asset('img/ruangan.jpg') }}"/>
                             @endif
                             
                             <!-- Foto Ilustrasi Badge -->
@@ -429,7 +429,7 @@
                         @if($room->image)
                             <img src="{{ asset('storage/' . $room->image) }}" class="w-full h-full object-cover rounded-l-xl border border-slate-200/50" />
                         @else
-                            <img src="https://via.placeholder.com/300x400?text=Ruangan" class="w-full h-full object-cover rounded-l-xl border border-slate-200/50" />
+                            <img src="{{ asset('img/ruangan.jpg') }}" class="w-full h-full object-cover rounded-l-xl border border-slate-200/50" />
                         @endif
                     </div>
 
